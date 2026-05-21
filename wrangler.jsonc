@@ -1,0 +1,11 @@
+{
+  // Static-assets-only Worker: serves the Astro/Starlight build output in
+  // ./dist. There is no server-side code, so there is no `main` entry — wrangler
+  // deploys a pure static-assets Worker. Deployed by `npx wrangler deploy` after
+  // `npm run build` produces ./dist.
+  "name": "usepod-docs",
+  "compatibility_date": "2026-05-21",
+  "assets": {
+    "directory": "./dist"
+  }
+}
