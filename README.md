@@ -58,13 +58,19 @@ Use Pod's audience is largely AI agents, so the docs are machine-consumable:
 
 ## Deploy
 
-The build is fully static (`./dist`), so it can be hosted anywhere. Two options:
+The build is fully static (`./dist`) — **no Astro adapter required**. It deploys
+via **Cloudflare Pages** with git integration, matching the rest of usepod.ai
+(whose DNS/zone is already on Cloudflare).
 
-- **GitHub Pages** — the `public/CNAME` file pins the `docs.usepod.ai` custom
-  domain; add a Pages workflow that builds and publishes `./dist`.
-- **Cloudflare Pages** — the rest of usepod.ai already deploys here. Set the
-  build command to `npm run build` and the output directory to `dist`; map the
-  `docs.usepod.ai` custom domain in the Pages project. (Remove `public/CNAME`
-  if you go this route — it's GitHub-Pages-specific.)
+Project settings:
 
-Point `docs.usepod.ai` DNS at whichever host you choose.
+- **Build command:** `npm run build`
+- **Build output directory:** `dist`
+- **Production branch:** `main`
+- **Node:** pinned via `.nvmrc` (also set `NODE_VERSION` in the Pages project)
+
+Cloudflare runs `npm ci` from the committed `package-lock.json`, builds, and
+publishes `dist` on every push to `main`. The custom domain `docs.usepod.ai` is
+added in the Pages project's **Custom domains** tab; because the zone is in the
+same Cloudflare account, the proxied DNS record and TLS cert are provisioned
+automatically (no manual DNS entry, no `CNAME` file).
