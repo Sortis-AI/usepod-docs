@@ -1,0 +1,41 @@
+---
+title: Use Pod
+description: The inference marketplace — drop-in OpenAI/Anthropic-compatible API, USDC billing, and a two-sided market of independent GPU operators.
+template: splash
+hero:
+  tagline: The inference marketplace. Point any OpenAI- or Anthropic-compatible client at Use Pod and get matched with the best-priced provider that meets your requirements. Pay in USDC, per request.
+  actions:
+    - text: Get started
+      link: /using/quickstart/
+      icon: right-arrow
+      variant: primary
+    - text: Run a provider
+      link: /providers/quickstart/
+      icon: rocket
+      variant: secondary
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+## Two sides, one market
+
+<CardGrid stagger>
+	<Card title="Use it" icon="laptop">
+		Add Use Pod as the base URL of any OpenAI- or Anthropic-compatible client.
+		No SDK changes, no auth changes. Fund a token by card or USDC and pay per
+		request. [Quickstart →](/using/quickstart/)
+	</Card>
+	<Card title="Supply it" icon="rocket">
+		Run a GPU? Serve open-weight models — or relay your own upstream keys — set
+		your prices, and earn 80% of every settled inference in USDC.
+		[Run a provider →](/providers/quickstart/)
+	</Card>
+	<Card title="Always-on fallback" icon="approve-check">
+		Centralized providers (Anthropic, OpenAI, Venice, and more) stay available
+		as a tier-zero fallback. You are never stranded. [How routing works →](/marketplace/routing/)
+	</Card>
+	<Card title="Built for agents" icon="seti:json">
+		Every page here is available as raw Markdown (append `.md`) and indexed in
+		[`/llms.txt`](/llms.txt). [Docs for agents →](/resources/for-agents/)
+	</Card>
+</CardGrid>

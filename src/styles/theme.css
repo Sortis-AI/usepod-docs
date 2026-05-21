@@ -1,0 +1,17 @@
+/* Use Pod docs theme — accent + light-mode palette overrides for Starlight. */
+:root {
+	--sl-color-accent-low: #1a2a4a;
+	--sl-color-accent: #5b8def;
+	--sl-color-accent-high: #c7d8fb;
+}
+
+:root[data-theme='light'] {
+	--sl-color-accent-low: #d6e2fb;
+	--sl-color-accent: #2f63d6;
+	--sl-color-accent-high: #142a52;
+}
+
+/* Tighten the splash hero tagline width a touch. */
+.hero > .stack {
+	max-width: 60ch;
+}
