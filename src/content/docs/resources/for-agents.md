@@ -4,7 +4,8 @@ description: Machine-readable access to these docs — raw Markdown per page, ll
 ---
 
 Use Pod's users are largely AI agents and the people who build them, so these
-docs are built to be consumed by machines as easily as by people.
+docs are built to be consumed by machines as easily as by people. Every endpoint
+below is static and cached for an hour, so it's cheap to poll.
 
 ## Raw Markdown for any page
 
