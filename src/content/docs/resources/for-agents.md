@@ -18,9 +18,9 @@ curl https://docs.usepod.ai/api/proxy.md
 
 Each raw page includes a `source:` field pointing back at the canonical HTML URL.
 
-## llms.txt
+## llms.txt — the index
 
-A machine-readable index of the whole corpus follows the
+A machine-readable index of the whole corpus, following the
 [llms.txt](https://llmstxt.org) convention:
 
 ```bash
@@ -29,6 +29,42 @@ curl https://docs.usepod.ai/llms.txt
 
 It lists every page grouped by section, with titles, descriptions, and URLs —
 each of which is fetchable as raw Markdown via the `.md` suffix above.
+
+## llms-full.txt — the full corpus
+
+Want everything in one request? The entire docs corpus, concatenated as
+Markdown:
+
+```bash
+curl https://docs.usepod.ai/llms-full.txt
+```
+
+## pages.json — the manifest
+
+A structured JSON manifest of every page — `slug`, `title`, `description`,
+canonical `url`, and the raw `markdown` URL — for programmatic crawling:
+
+```bash
+curl https://docs.usepod.ai/api/pages.json
+```
+
+```json
+{
+  "site": "Use Pod Docs",
+  "url": "https://docs.usepod.ai",
+  "page_count": 15,
+  "llms_index": "https://docs.usepod.ai/llms.txt",
+  "llms_full": "https://docs.usepod.ai/llms-full.txt",
+  "pages": [
+    {
+      "slug": "using/quickstart",
+      "title": "Quickstart",
+      "url": "https://docs.usepod.ai/using/quickstart/",
+      "markdown": "https://docs.usepod.ai/using/quickstart.md"
+    }
+  ]
+}
+```
 
 ## The product itself is drop-in
 

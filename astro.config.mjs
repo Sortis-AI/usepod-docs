@@ -10,15 +10,49 @@ export default defineConfig({
 			title: 'Use Pod Docs',
 			description:
 				'The inference marketplace. Drop-in OpenAI/Anthropic-compatible API, USDC billing, and a two-sided market of independent GPU operators.',
-			customCss: ['./src/styles/theme.css'],
+			customCss: ['./src/styles/theme.css', './src/styles/code.css'],
 			expressiveCode: {
-				themes: ['github-dark', 'github-light'],
+				themes: ['github-light'],
+				useStarlightDarkModeSwitch: false,
+				styleOverrides: {
+					borderRadius: '8px',
+					borderColor: 'var(--code-border)',
+					codeFontFamily: 'var(--sl-font-mono)',
+					codeFontSize: '0.8125rem',
+					codeLineHeight: '1.6',
+					uiFontFamily: 'var(--sl-font-mono)',
+					uiFontSize: '0.75rem',
+					frames: {
+						frameBoxShadowCssValue: 'none',
+						editorActiveTabIndicatorBottomColor: 'var(--sl-color-accent)',
+						editorActiveTabBorderColor: 'transparent',
+						editorTabBarBorderBottomColor: 'var(--code-border)',
+						terminalTitlebarBorderBottomColor: 'var(--code-border)',
+						terminalBackground: 'var(--code-bg)',
+						editorBackground: 'var(--code-bg)',
+					},
+				},
 			},
 			head: [
+				// Light-mode only (matches basehub): force the theme before paint.
+				{
+					tag: 'script',
+					content:
+						"document.documentElement.dataset.theme='light';try{localStorage.setItem('starlight-theme','light');}catch(_){}",
+				},
+				// Preload the primary self-hosted fonts.
+				{
+					tag: 'link',
+					attrs: { rel: 'preload', href: '/fonts/Inter-Variable.woff2', as: 'font', type: 'font/woff2', crossorigin: true },
+				},
+				{
+					tag: 'link',
+					attrs: { rel: 'preload', href: '/fonts/JetBrainsMono-Variable.woff2', as: 'font', type: 'font/woff2', crossorigin: true },
+				},
 				{ tag: 'meta', attrs: { property: 'og:site_name', content: 'Use Pod Docs' } },
 				{ tag: 'meta', attrs: { property: 'og:type', content: 'website' } },
-				{ tag: 'meta', attrs: { name: 'theme-color', content: '#5b8def' } },
-				// llms.txt — machine-readable index for agents (see /resources/for-agents).
+				{ tag: 'meta', attrs: { name: 'theme-color', content: '#2f5fe0' } },
+				// Agent-facing alternates: raw Markdown per page, plus the corpus index.
 				{
 					tag: 'link',
 					attrs: { rel: 'alternate', type: 'text/plain', href: '/llms.txt', title: 'llms.txt' },

@@ -23,7 +23,7 @@ export const GET: APIRoute = async () => {
 	const grouped = new Map<string, { title: string; description: string; url: string }[]>();
 	for (const entry of docs) {
 		const slug = entry.id;
-		if (!slug) continue; // skip the splash homepage (empty id)
+		if (!slug || slug === 'index') continue; // skip the splash homepage
 		const section = slug.split('/')[0] ?? 'other';
 		if (!grouped.has(section)) grouped.set(section, []);
 		grouped.get(section)!.push({
@@ -43,7 +43,9 @@ export const GET: APIRoute = async () => {
 	const lines: string[] = [
 		'# Use Pod',
 		'',
-		'> Use Pod is the inference marketplace: a drop-in OpenAI- and Anthropic-compatible API backed by a two-sided market of independent GPU operators, settled in USDC. Every page below is available as raw Markdown by appending `.md` to its URL (e.g. `/using/quickstart.md`).',
+		'> Use Pod is the inference marketplace: a drop-in OpenAI- and Anthropic-compatible API backed by a two-sided market of independent GPU operators, settled in USDC.',
+		'',
+		'Every page below is available as raw Markdown by appending `.md` to its URL (e.g. `/using/quickstart.md`). The full corpus in a single file is at `/llms-full.txt`, and a JSON manifest of every page is at `/api/pages.json`.',
 		'',
 	];
 

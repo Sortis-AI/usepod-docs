@@ -8,7 +8,9 @@ const SITE = 'https://docs.usepod.ai';
 
 export const getStaticPaths: GetStaticPaths = async () => {
 	const docs = await getCollection('docs');
-	return docs.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+	return docs
+		.filter((entry) => entry.id && entry.id !== 'index')
+		.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
 };
 
 export const GET: APIRoute = async ({ props }) => {
