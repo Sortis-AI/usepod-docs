@@ -53,14 +53,45 @@ export default defineConfig({
 				{ tag: 'meta', attrs: { property: 'og:site_name', content: 'UsePod Docs' } },
 				{ tag: 'meta', attrs: { property: 'og:type', content: 'website' } },
 				{ tag: 'meta', attrs: { name: 'theme-color', content: '#2f5fe0' } },
+				// Social card image. Shared default; supplements Starlight's
+				// per-page og:title / og:description / twitter:card.
+				{ tag: 'meta', attrs: { property: 'og:image', content: 'https://docs.usepod.ai/og-image.png' } },
+				{ tag: 'meta', attrs: { property: 'og:image:width', content: '1200' } },
+				{ tag: 'meta', attrs: { property: 'og:image:height', content: '628' } },
+				{ tag: 'meta', attrs: { property: 'og:image:alt', content: 'UsePod — the inference marketplace' } },
+				{ tag: 'meta', attrs: { name: 'twitter:image', content: 'https://docs.usepod.ai/og-image.png' } },
 				// Favicons — matches the usepod.ai homepage icon set.
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' } },
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' } },
 				{ tag: 'link', attrs: { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' } },
-				// Agent-facing alternates: raw Markdown per page, plus the corpus index.
+				{ tag: 'link', attrs: { rel: 'manifest', href: '/site.webmanifest' } },
+				// Agent-facing alternates: raw Markdown per page, the corpus index,
+				// the full corpus, and the JSON manifest.
 				{
 					tag: 'link',
 					attrs: { rel: 'alternate', type: 'text/plain', href: '/llms.txt', title: 'llms.txt' },
+				},
+				{
+					tag: 'link',
+					attrs: { rel: 'alternate', type: 'text/plain', href: '/llms-full.txt', title: 'llms-full.txt' },
+				},
+				{
+					tag: 'link',
+					attrs: { rel: 'alternate', type: 'application/json', href: '/api/pages.json', title: 'pages.json' },
+				},
+				// Structured data for search engines and assistants.
+				{
+					tag: 'script',
+					attrs: { type: 'application/ld+json' },
+					content: JSON.stringify({
+						'@context': 'https://schema.org',
+						'@type': 'WebSite',
+						name: 'UsePod Docs',
+						url: 'https://docs.usepod.ai',
+						description:
+							'Documentation for UsePod, the inference marketplace. Every page is available as raw Markdown by appending .md to its URL; /llms.txt and /llms-full.txt index the corpus.',
+						publisher: { '@type': 'Organization', name: 'UsePod', url: 'https://usepod.ai' },
+					}),
 				},
 			],
 			social: [
