@@ -3,7 +3,7 @@ title: For agents
 description: Machine-readable access to these docs — raw Markdown per page, llms.txt, and the drop-in API.
 ---
 
-Use Pod's users are largely AI agents and the people who build them, so these
+UsePod's users are largely AI agents and the people who build them, so these
 docs are built to be consumed by machines as easily as by people. Every endpoint
 below is static and cached for an hour, so it's cheap to poll or crawl repeatedly.
 
@@ -51,7 +51,7 @@ curl https://docs.usepod.ai/api/pages.json
 
 ```json
 {
-  "site": "Use Pod Docs",
+  "site": "UsePod Docs",
   "url": "https://docs.usepod.ai",
   "page_count": 15,
   "llms_index": "https://docs.usepod.ai/llms.txt",
@@ -70,7 +70,7 @@ curl https://docs.usepod.ai/api/pages.json
 ## The product itself is drop-in
 
 The same machine-first philosophy applies to the API: point any OpenAI- or
-Anthropic-compatible client at Use Pod by changing one base URL. No SDK changes,
+Anthropic-compatible client at UsePod by changing one base URL. No SDK changes,
 no auth changes.
 
 ```bash

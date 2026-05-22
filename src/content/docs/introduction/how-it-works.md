@@ -1,9 +1,9 @@
 ---
 title: How it works
-description: From an inbound request to a settled, billed response — the path through the Use Pod gateway.
+description: From an inbound request to a settled, billed response — the path through the UsePod gateway.
 ---
 
-Every inference request flows through the Use Pod gateway, which authenticates
+Every inference request flows through the UsePod gateway, which authenticates
 the caller, checks balance, matches a provider, relays the response, and settles
 the bill asynchronously.
 
@@ -30,7 +30,7 @@ the bill asynchronously.
 ## The two sides
 
 - **Demand side.** You hold a token with a USDC balance and send standard API
-  requests. See [Using Use Pod](/using/quickstart/).
+  requests. See [Using UsePod](/using/quickstart/).
 - **Supply side.** Operators run the provider agent (or enroll a BYOK relay),
   advertise models and prices, and earn 80% of every settled inference. See
   [Running a provider](/providers/quickstart/).

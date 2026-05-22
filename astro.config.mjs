@@ -7,9 +7,10 @@ export default defineConfig({
 	site: 'https://docs.usepod.ai',
 	integrations: [
 		starlight({
-			title: 'Use Pod Docs',
+			title: 'UsePod Docs',
 			description:
 				'The inference marketplace. Drop-in OpenAI/Anthropic-compatible API, USDC billing, and a two-sided market of independent GPU operators.',
+			favicon: '/favicon.ico',
 			customCss: ['./src/styles/theme.css', './src/styles/code.css'],
 			expressiveCode: {
 				themes: ['github-light'],
@@ -49,9 +50,13 @@ export default defineConfig({
 					tag: 'link',
 					attrs: { rel: 'preload', href: '/fonts/JetBrainsMono-Variable.woff2', as: 'font', type: 'font/woff2', crossorigin: true },
 				},
-				{ tag: 'meta', attrs: { property: 'og:site_name', content: 'Use Pod Docs' } },
+				{ tag: 'meta', attrs: { property: 'og:site_name', content: 'UsePod Docs' } },
 				{ tag: 'meta', attrs: { property: 'og:type', content: 'website' } },
 				{ tag: 'meta', attrs: { name: 'theme-color', content: '#2f5fe0' } },
+				// Favicons — matches the usepod.ai homepage icon set.
+				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' } },
+				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '16x16', href: '/favicon-16x16.png' } },
+				{ tag: 'link', attrs: { rel: 'apple-touch-icon', sizes: '180x180', href: '/apple-touch-icon.png' } },
 				// Agent-facing alternates: raw Markdown per page, plus the corpus index.
 				{
 					tag: 'link',
@@ -69,7 +74,7 @@ export default defineConfig({
 				{
 					label: 'Introduction',
 					items: [
-						{ label: 'What is Use Pod', slug: 'introduction/what-is-use-pod' },
+						{ label: 'What is UsePod', slug: 'introduction/what-is-use-pod' },
 						{ label: 'How it works', slug: 'introduction/how-it-works' },
 					],
 				},
@@ -81,7 +86,7 @@ export default defineConfig({
 					],
 				},
 				{
-					label: 'Using Use Pod (demand side)',
+					label: 'Using UsePod (demand side)',
 					items: [
 						{ label: 'Quickstart', slug: 'using/quickstart' },
 						{ label: 'Drop-in API', slug: 'using/drop-in-api' },

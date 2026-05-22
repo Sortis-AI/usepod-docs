@@ -1,9 +1,9 @@
 ---
-title: What is Use Pod
+title: What is UsePod
 description: An inference marketplace with a drop-in OpenAI/Anthropic-compatible API and USDC settlement.
 ---
 
-Use Pod is an **inference marketplace**. Independent operators run open-weight
+UsePod is an **inference marketplace**. Independent operators run open-weight
 models on their own GPU hardware — or relay requests with their own keys to
 upstreams like Level5, Venice, OpenRouter, Together, Groq, or Morpheus — set
 their prices, and earn USDC. Users send standard OpenAI- or Anthropic-compatible

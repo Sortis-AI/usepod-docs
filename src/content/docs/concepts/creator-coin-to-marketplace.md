@@ -19,7 +19,7 @@ bankrupt their operators.
 An agent that can't pay for its own compute is just an expensive demo. Solving
 that — economic sustainability — is the real problem.
 
-## Level5, SQUIRE, and the path to Use Pod
+## Level5, SQUIRE, and the path to UsePod
 
 It started with [Level5.cloud](https://level5.cloud), a hosting platform where an
 agent can pay its own bills: agents get wallets, manage their own resources, and
@@ -39,11 +39,11 @@ can't monetize. Researchers have custom models no public API offers. And
 inference users are about to get hit with a pricing shock when subsidies wind
 down.
 
-That question became Use Pod.
+That question became UsePod.
 
 ## A two-sided marketplace for inference
 
-Use Pod is a two-sided marketplace for LLM inference. It serves four kinds of
+UsePod is a two-sided marketplace for LLM inference. It serves four kinds of
 participant:
 
 - **Hardware providers** run models on their own infrastructure and set their
@@ -55,7 +55,7 @@ participant:
 - **Researchers** monetize their work by contributing models — including custom
   quantizations you can't find at any public provider — priced at whatever rate
   the operator sets.
-- **Inference users** change their API endpoint to Use Pod and get the same
+- **Inference users** change their API endpoint to UsePod and get the same
   frontier models plus open-source alternatives at a discount to the aggregators.
   It's a one-line change. See the [Drop-in API](/using/drop-in-api/).
 

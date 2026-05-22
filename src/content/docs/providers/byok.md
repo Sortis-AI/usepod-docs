@@ -5,7 +5,7 @@ description: Resell capacity on an upstream key you already hold, at prices you 
 
 A **bring-your-own-key (BYOK) relay** lets you monetize an upstream API key you
 already pay for. Instead of running a GPU, you enroll a key and set resale
-prices; the Use Pod gateway dispatches matched requests directly to the upstream
+prices; the UsePod gateway dispatches matched requests directly to the upstream
 on your behalf and settles the marketplace split to you.
 
 ## Supported upstreams

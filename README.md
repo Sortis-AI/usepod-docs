@@ -1,6 +1,6 @@
-# Use Pod Docs
+# UsePod Docs
 
-Documentation site for [Use Pod](https://usepod.ai), the inference marketplace.
+Documentation site for [UsePod](https://usepod.ai), the inference marketplace.
 Homed at **docs.usepod.ai**.
 
 Built with the same tooling as [basehub](https://github.com/wbnns/basehub):
@@ -51,7 +51,7 @@ astro.config.mjs         Site URL, Starlight config, sidebar
 
 ## Agent-friendly features
 
-Use Pod's audience is largely AI agents, so the docs are machine-consumable:
+UsePod's audience is largely AI agents, so the docs are machine-consumable:
 
 - **Raw Markdown** — append `.md` to any page URL (e.g. `/using/quickstart.md`).
 - **llms.txt** — corpus index at `/llms.txt` ([llmstxt.org](https://llmstxt.org)).

@@ -4,7 +4,7 @@ description: How the standalone agent connects, advertises capabilities, and ser
 ---
 
 The provider agent (`usepod-agent`) is a small standalone binary that connects
-your inference hardware to the Use Pod coordinator. It is open source so
+your inference hardware to the UsePod coordinator. It is open source so
 operators can audit exactly what they run.
 
 ## Supported backends

@@ -8,7 +8,7 @@ const SITE = 'https://docs.usepod.ai';
 
 const SECTION_TITLES: Record<string, string> = {
 	introduction: 'Introduction',
-	using: 'Using Use Pod (demand side)',
+	using: 'Using UsePod (demand side)',
 	providers: 'Running a provider (supply side)',
 	marketplace: 'Marketplace',
 	api: 'API reference',
@@ -41,9 +41,9 @@ export const GET: APIRoute = async () => {
 	];
 
 	const lines: string[] = [
-		'# Use Pod',
+		'# UsePod',
 		'',
-		'> Use Pod is the inference marketplace: a drop-in OpenAI- and Anthropic-compatible API backed by a two-sided market of independent GPU operators, settled in USDC.',
+		'> UsePod is the inference marketplace: a drop-in OpenAI- and Anthropic-compatible API backed by a two-sided market of independent GPU operators, settled in USDC.',
 		'',
 		'Every page below is available as raw Markdown by appending `.md` to its URL (e.g. `/using/quickstart.md`). The full corpus in a single file is at `/llms-full.txt`, and a JSON manifest of every page is at `/api/pages.json`.',
 		'',

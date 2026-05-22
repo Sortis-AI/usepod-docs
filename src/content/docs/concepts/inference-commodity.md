@@ -91,7 +91,7 @@ commodity.
 The obvious objection: *how do I know some random provider is actually running
 the correct model, unmodified?*
 
-Use Pod's answer today is **reputation plus benchmark canaries**: providers
+UsePod's answer today is **reputation plus benchmark canaries**: providers
 accrue a reputation score from real request outcomes, and a small fraction of
 traffic is sampled as a hidden canary whose output is checked for deviation —
 catching providers that misreport what they serve. Bonds give that enforcement

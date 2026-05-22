@@ -1,9 +1,9 @@
 ---
 title: Quickstart
-description: Get a token, fund it, and point your client at Use Pod in under a minute.
+description: Get a token, fund it, and point your client at UsePod in under a minute.
 ---
 
-Add Use Pod as the base URL of any OpenAI- or Anthropic-compatible client. No SDK
+Add UsePod as the base URL of any OpenAI- or Anthropic-compatible client. No SDK
 changes, no auth changes.
 
 1. **Get a token and deposit address.**
@@ -19,7 +19,7 @@ changes, no auth changes.
    Top up by card at [`usepod.ai/fund`](https://usepod.ai/fund) or send USDC to
    the deposit address. See [Funding your balance](/using/funding/).
 
-3. **Point your client at Use Pod.**
+3. **Point your client at UsePod.**
 
    ```bash
    # Anthropic-compatible (e.g. Claude Code)

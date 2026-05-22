@@ -1,9 +1,9 @@
 ---
 title: Drop-in API
-description: Use Pod is a base-URL swap for any OpenAI- or Anthropic-compatible client.
+description: UsePod is a base-URL swap for any OpenAI- or Anthropic-compatible client.
 ---
 
-Use Pod's load-bearing promise is **drop-in compatibility**: you change one base
+UsePod's load-bearing promise is **drop-in compatibility**: you change one base
 URL and nothing else. Your token lives in the URL path; your existing API calls,
 SDKs, and tools work unchanged.
 

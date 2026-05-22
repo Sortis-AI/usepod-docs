@@ -12,9 +12,9 @@ export const GET: APIRoute = async () => {
 		.sort((a, b) => a.id.localeCompare(b.id));
 
 	const parts: string[] = [
-		'# Use Pod — full content',
+		'# UsePod — full content',
 		'',
-		`> Use Pod docs — the full Markdown corpus, concatenated. ${sorted.length} pages. See /llms.txt for the index.`,
+		`> UsePod docs — the full Markdown corpus, concatenated. ${sorted.length} pages. See /llms.txt for the index.`,
 		'',
 		`Source: ${SITE}`,
 		`Index: ${SITE}/llms.txt`,

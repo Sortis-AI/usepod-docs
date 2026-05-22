@@ -21,10 +21,10 @@ export const GET: APIRoute = async () => {
 
 	const body = JSON.stringify(
 		{
-			site: 'Use Pod Docs',
+			site: 'UsePod Docs',
 			url: SITE,
 			description:
-				'Use Pod docs. Every page is reachable as raw Markdown by appending .md to the URL. Also exposes /llms.txt (page index) and /llms-full.txt (full corpus).',
+				'UsePod docs. Every page is reachable as raw Markdown by appending .md to the URL. Also exposes /llms.txt (page index) and /llms-full.txt (full corpus).',
 			generated_at: new Date().toISOString(),
 			page_count: pages.length,
 			llms_index: `${SITE}/llms.txt`,

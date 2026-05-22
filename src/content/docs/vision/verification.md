@@ -8,7 +8,7 @@ Adapted from a piece originally published on X by [@0xgilbert](https://x.com/0xg
 :::
 
 :::caution[Vision, not shipped]
-This page describes where Use Pod is headed, not what it does today. Hardware
+This page describes where UsePod is headed, not what it does today. Hardware
 attestation and compute futures are roadmap items. For the trust mechanisms that
 are live now (reputation, benchmark canaries, bonds), see
 [Trust & reputation](/marketplace/trust/).
