@@ -1,9 +1,9 @@
 ---
 title: Use Pod
-description: The inference marketplace — drop-in OpenAI/Anthropic-compatible API, USDC billing, and a two-sided market of independent GPU operators.
+description: The inference marketplace — a drop-in OpenAI/Anthropic-compatible API backed by a two-sided market of independent operators, settled in USDC.
 template: splash
 hero:
-  tagline: The inference marketplace. Point any OpenAI- or Anthropic-compatible client at Use Pod and get matched with the best-priced provider that meets your requirements. Pay in USDC, per request.
+  tagline: The inference marketplace. Open-weight models are commoditizing — point any OpenAI- or Anthropic-compatible client at Use Pod, get matched with the best-priced provider that meets your requirements, and pay per request in USDC.
   actions:
     - text: Get started
       link: /using/quickstart/
@@ -15,29 +15,79 @@ hero:
       variant: secondary
 ---
 
-import { Card, CardGrid } from '@astrojs/starlight/components';
+import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
 
-## Two sides, one market
+Frontier models are temporary monopolies; open-weight models are commodities — and
+commodities get cheaper when markets are allowed to work. Use Pod is a two-sided
+marketplace that lets supply meet demand directly and drives the price of inference
+toward the cost of production, while a drop-in API keeps your existing agents and
+tools running unchanged. [Why inference is becoming a commodity →](/concepts/inference-commodity/)
 
-<CardGrid stagger>
-	<Card title="Use it" icon="laptop">
-		Add Use Pod as the base URL of any OpenAI- or Anthropic-compatible client.
-		No SDK changes, no auth changes. Fund a token by card or USDC and pay per
-		request. [Quickstart →](/using/quickstart/)
+## Who it's for
+
+<CardGrid>
+	<Card title="Inference users" icon="laptop">
+		Change one base URL and reach frontier models plus open-weight alternatives
+		at marketplace prices — frontier quality where you need it, commodity pricing
+		everywhere else. [Quickstart →](/using/quickstart/)
 	</Card>
-	<Card title="Supply it" icon="rocket">
-		Run a GPU? Serve open-weight models — or relay your own upstream keys — set
-		your prices, and earn 80% of every settled inference in USDC.
-		[Run a provider →](/providers/quickstart/)
+	<Card title="Hardware providers" icon="rocket">
+		Run open models on your own GPUs, set your prices, and earn 80% of every
+		settled inference in USDC. [Run a provider →](/providers/quickstart/)
 	</Card>
-	<Card title="Always-on fallback" icon="approve-check">
-		Centralized providers (Anthropic, OpenAI, Venice, and more) stay available
-		as a tier-zero fallback. You are never stranded. [How routing works →](/marketplace/routing/)
+	<Card title="Key & credit holders" icon="cloud-download">
+		Hold an upstream API key or idle inference allocation? Resell it into the
+		market at a price you set, with a BYOK relay. [BYOK relays →](/providers/byok/)
+	</Card>
+	<Card title="Researchers" icon="open-book">
+		Monetize custom models and quantizations the public APIs don't offer, priced
+		at whatever the market will bear. [Run a provider →](/providers/quickstart/)
+	</Card>
+</CardGrid>
+
+## What you get
+
+<CardGrid>
+	<Card title="Drop-in API" icon="forward-slash">
+		OpenAI- and Anthropic-compatible. One base-URL change — no SDK or auth
+		changes. [Drop-in API →](/using/drop-in-api/)
+	</Card>
+	<Card title="Best-price routing" icon="list-format">
+		Candidates are capped at the cheapest centralized price, then filtered by
+		your ceiling, provider health, and capacity. [Routing & matching →](/marketplace/routing/)
+	</Card>
+	<Card title="Always-on fallback" icon="approve-check-circle">
+		Centralized providers stay available as a tier-zero fallback — you're never
+		stranded. [Pricing →](/marketplace/pricing/)
 	</Card>
 	<Card title="Built for agents" icon="seti:json">
-		Every page is raw Markdown (append `.md`), with a corpus index at
-		[`/llms.txt`](/llms.txt), the full text at [`/llms-full.txt`](/llms-full.txt),
-		and a JSON manifest at [`/api/pages.json`](/api/pages.json).
+		Every page is raw Markdown (append `.md`), with [`/llms.txt`](/llms.txt),
+		[`/llms-full.txt`](/llms-full.txt), and [`/api/pages.json`](/api/pages.json).
 		[Docs for agents →](/resources/for-agents/)
 	</Card>
+</CardGrid>
+
+## Start here
+
+<CardGrid>
+	<LinkCard
+		title="Quickstart"
+		href="/using/quickstart/"
+		description="Get a token, fund it, and send your first request in under a minute."
+	/>
+	<LinkCard
+		title="Run a provider"
+		href="/providers/quickstart/"
+		description="Install the agent or enroll a BYOK relay and start earning USDC."
+	/>
+	<LinkCard
+		title="Why inference is a commodity"
+		href="/concepts/inference-commodity/"
+		description="The pricing thesis behind the marketplace."
+	/>
+	<LinkCard
+		title="Verification is the product"
+		href="/vision/verification/"
+		description="Where this goes: verifiable compute and a futures market."
+	/>
 </CardGrid>
