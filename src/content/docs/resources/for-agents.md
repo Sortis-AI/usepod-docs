@@ -67,6 +67,20 @@ curl https://docs.usepod.ai/api/pages.json
 }
 ```
 
+## Agent skills
+
+Two ready-to-run onboarding skills live on the main site, in Claude Code
+`SKILL.md` format. Point an agent at the relevant one to drive the whole flow
+end to end:
+
+- **[client-onboard](https://usepod.ai/skill/client-onboard/SKILL.md)** (demand
+  side): register an API token, fund it with USDC, poll until it activates, and
+  emit a connection snippet for the user's inference client (Claude, Cursor, the
+  OpenAI SDK, LangChain, and more).
+- **[host-onboard](https://usepod.ai/skill/host-onboard/SKILL.md)** (supply
+  side): install `usepod-agent` on a GPU host, pair it with the marketplace,
+  post the $50 USDC bond, run it under systemd, and handle health and upgrades.
+
 ## The product itself is drop-in
 
 The same machine-first philosophy applies to the API: point any OpenAI- or

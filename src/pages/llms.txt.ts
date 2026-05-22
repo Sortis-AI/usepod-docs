@@ -47,6 +47,8 @@ export const GET: APIRoute = async () => {
 		'',
 		'Every page below is available as raw Markdown by appending `.md` to its URL (e.g. `/using/quickstart.md`). The full corpus in a single file is at `/llms-full.txt`, and a JSON manifest of every page is at `/api/pages.json`.',
 		'',
+		'Two ready-to-run onboarding skills (Claude Code SKILL.md format) are published on the main site: client-onboard (demand side) at https://usepod.ai/skill/client-onboard/SKILL.md, and host-onboard (supply side) at https://usepod.ai/skill/host-onboard/SKILL.md.',
+		'',
 	];
 
 	for (const section of sortedSections) {
