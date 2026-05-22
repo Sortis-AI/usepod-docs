@@ -74,6 +74,13 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Concepts',
+					items: [
+						{ label: 'Why inference is becoming a commodity', slug: 'concepts/inference-commodity' },
+						{ label: 'From creator coin to a compute marketplace', slug: 'concepts/creator-coin-to-marketplace' },
+					],
+				},
+				{
 					label: 'Using Use Pod (demand side)',
 					items: [
 						{ label: 'Quickstart', slug: 'using/quickstart' },
@@ -105,6 +112,10 @@ export default defineConfig({
 						{ label: 'Register a token', slug: 'api/register' },
 						{ label: 'Inference proxy', slug: 'api/proxy' },
 					],
+				},
+				{
+					label: 'Vision',
+					items: [{ label: 'Verification is the product', slug: 'vision/verification' }],
 				},
 				{
 					label: 'Resources',
