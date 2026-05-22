@@ -13,6 +13,9 @@ hero:
       link: /providers/quickstart/
       icon: rocket
       variant: secondary
+    - text: Resell your API keys
+      link: /providers/byok/
+      variant: minimal
 ---
 
 import { Card, CardGrid, LinkCard } from '@astrojs/starlight/components';
@@ -36,8 +39,8 @@ tools running unchanged. [Why inference is becoming a commodity →](/concepts/i
 		settled inference in USDC. [Run a provider →](/providers/quickstart/)
 	</Card>
 	<Card title="Key & credit holders" icon="cloud-download">
-		Hold an upstream API key or idle inference allocation? Resell it into the
-		market at a price you set, with a BYOK relay. [BYOK relays →](/providers/byok/)
+		Hold an upstream API key or idle inference allocation? Connect it and resell
+		into the market at a price you set. [Resell your keys →](/providers/byok/)
 	</Card>
 	<Card title="Researchers" icon="open-book">
 		Monetize custom models and quantizations the public APIs don't offer, priced
@@ -78,7 +81,7 @@ tools running unchanged. [Why inference is becoming a commodity →](/concepts/i
 	<LinkCard
 		title="Run a provider"
 		href="/providers/quickstart/"
-		description="Install the agent or enroll a BYOK relay and start earning USDC."
+		description="Install the agent on a GPU, or connect an upstream key, and start earning USDC."
 	/>
 	<LinkCard
 		title="Why inference is a commodity"
