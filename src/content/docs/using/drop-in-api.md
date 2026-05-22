@@ -48,7 +48,7 @@ print(resp.choices[0].message.content)
 Every proxied response includes:
 
 - `X-Balance-Remaining` — your token's remaining balance after this request.
-- `X-Pod-Route` — which path served the request (marketplace, BYOK relay, or
+- `X-Pod-Route` — which path served the request (marketplace, key relay, or
   centralized fallback).
 
 ## Notes

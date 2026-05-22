@@ -1,12 +1,13 @@
 ---
-title: BYOK relays
-description: Resell capacity on an upstream key you already hold. How to price, how routing selects you, and exactly when your key earns.
+title: Resell your keys
+description: Resell capacity on an upstream API key you already hold. How to price, how routing selects you, and exactly when your key earns.
 ---
 
-A bring-your-own-key (BYOK) relay lets you monetize an upstream API key you
-already pay for. Instead of running a GPU, you enroll a key and set resale
-prices; the UsePod gateway dispatches matched requests directly to the upstream
-on your behalf and settles the marketplace split to you.
+Resell capacity on an upstream API key you already pay for. Instead of running a
+GPU, you enroll a key and set resale prices; the UsePod gateway dispatches
+matched requests directly to the upstream on your behalf and settles the
+marketplace split to you. We call a listing like this a **key relay** (you may
+have seen this pattern called BYOK, "bring your own key").
 
 Enroll and price your catalog at [`usepod.ai/host`](https://usepod.ai/host).
 
@@ -81,9 +82,9 @@ A request reaches your relay only if it wins selection. The gateway:
    daily spend cap is not exhausted.
 3. **Sorts cheapest first** by input + output price (ties broken by input price,
    then earliest enrollment).
-4. **Filters each candidate in price order.** A BYOK relay is eligible when it
+4. **Filters each candidate in price order.** A key relay is eligible when it
    is not throttled, and its input and output prices are both at or below the
-   ceiling from rule 1. Unlike self-hosted GPU providers, a BYOK relay does
+   ceiling from rule 1. Unlike self-hosted GPU providers, a key relay does
    **not** need a live connection and is **not** capacity-checked, your key is
    always considered available (subject to the daily cap).
 5. **First survivor wins.** In `auto` routing the request falls through to the
@@ -135,7 +136,7 @@ your net = $0.0256 − (your upstream cost for those tokens)
 ```
 
 :::caution[Cache tokens are not billed on relays today]
-Marketplace and BYOK quotes currently carry only input and output rates, so
+Marketplace and key relay quotes currently carry only input and output rates, so
 cache-read and cache-write tokens are billed at **0** on relay routes. Don't
 price assuming cache-token revenue, and remember your upstream may still charge
 you for them.

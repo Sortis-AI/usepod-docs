@@ -5,6 +5,10 @@ import starlight from '@astrojs/starlight';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://docs.usepod.ai',
+	// The page formerly lived at /providers/byok; keep old links working.
+	redirects: {
+		'/providers/byok': '/providers/resell-keys/',
+	},
 	integrations: [
 		starlight({
 			title: 'UsePod Docs',
@@ -130,7 +134,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Quickstart', slug: 'providers/quickstart' },
 						{ label: 'The provider agent', slug: 'providers/agent' },
-						{ label: 'BYOK relays', slug: 'providers/byok' },
+						{ label: 'Resell your keys', slug: 'providers/resell-keys' },
 						{ label: 'Earnings & cashout', slug: 'providers/earnings-and-cashout' },
 					],
 				},

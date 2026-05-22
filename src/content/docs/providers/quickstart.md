@@ -4,8 +4,8 @@ description: Install the agent, enroll, post a bond, and start earning USDC for 
 ---
 
 Run a GPU? Earn USDC by serving inference. Point the provider agent at a local
-backend (vLLM, llama.cpp, LM Studio, Ollama) — or enroll a BYOK relay for an
-upstream you already pay for — and set your resale prices.
+backend (vLLM, llama.cpp, LM Studio, Ollama) — or resell an upstream key you
+already pay for — and set your resale prices.
 
 1. **Install the agent.**
 
@@ -44,5 +44,5 @@ demand — see [Earnings & cashout](/providers/earnings-and-cashout/).
 
 - **Self-hosted backend.** The agent dispatches jobs to your local inference
   server. See [The provider agent](/providers/agent/).
-- **BYOK relay.** Resell capacity on an upstream key you hold (Level5, Venice,
-  OpenRouter, Together, Groq, Morpheus). See [BYOK relays](/providers/byok/).
+- **Resell a key.** Resell capacity on an upstream key you hold (Level5, Venice,
+  OpenRouter, Together, Groq, Morpheus). See [Resell your keys](/providers/resell-keys/).

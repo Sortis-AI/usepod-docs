@@ -4,7 +4,7 @@ description: Cap the price you'll pay per million tokens with per-request header
 ---
 
 You can bound the price you're willing to pay on a per-request basis with two
-optional headers. If no provider (marketplace, BYOK, or centralized) can serve
+optional headers. If no provider (marketplace, key relay, or centralized) can serve
 the request at or below your ceiling, the request is rejected rather than billed
 at a higher price.
 
@@ -29,7 +29,7 @@ curl https://api.usepod.ai/proxy/<token>/v1/chat/completions \
 
 - A candidate is eligible only if **both** its input and output prices are at or
   below your ceilings.
-- Marketplace and BYOK prices are already capped at the cheapest centralized
+- Marketplace and key relay prices are already capped at the cheapest centralized
   price for the model, so your ceiling filters within that capped set.
 - In `auto` routing, a too-expensive marketplace listing simply falls through to
   a cheaper option (or to centralized). In marketplace-only routing, it returns a

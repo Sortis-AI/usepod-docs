@@ -17,7 +17,7 @@ the bill asynchronously.
    ceiling and provider health, then sorted by price.
    - **Marketplace candidate found** → dispatched over an outbound WebSocket to a
      provider agent, which calls its local backend and streams bytes back.
-   - **BYOK relay candidate found** → the gateway decrypts the operator's stored
+   - **key relay candidate found** → the gateway decrypts the operator's stored
      key and forwards over HTTPS to the upstream.
    - **Otherwise** → falls through to the centralized router (the always-on
      tier-zero fallback).
@@ -31,7 +31,7 @@ the bill asynchronously.
 
 - **Demand side.** You hold a token with a USDC balance and send standard API
   requests. See [Using UsePod](/using/quickstart/).
-- **Supply side.** Operators run the provider agent (or enroll a BYOK relay),
+- **Supply side.** Operators run the provider agent (or enroll a key relay),
   advertise models and prices, and earn 80% of every settled inference. See
   [Running a provider](/providers/quickstart/).
 

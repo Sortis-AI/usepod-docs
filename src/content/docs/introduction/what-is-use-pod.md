@@ -32,7 +32,7 @@ unchanged.
   by card or by sending USDC on Solana.
 - **Open supply side.** Anyone can run the provider agent against a local backend
   (vLLM, llama.cpp, LM Studio, Ollama) or enroll a bring-your-own-key relay.
-- **Price-capped routing.** Marketplace and BYOK candidates are never more
+- **Price-capped routing.** Marketplace and key relay candidates are never more
   expensive than the cheapest centralized price for the same model.
 
 ## Who it's for

@@ -11,7 +11,7 @@ request as the accounting worker settles usage — debiting the user and crediti
 you in the same transaction.
 
 Users are billed at your listed price, which is capped at the cheapest
-centralized price for the model. For BYOK relays, your upstream bill is still
+centralized price for the model. For key relays, your upstream bill is still
 yours to pay — price accordingly.
 
 ## Cashing out

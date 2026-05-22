@@ -37,7 +37,7 @@ the path. See [Spend controls](/using/spend-controls/) for the price headers.
 | Header | Meaning |
 | --- | --- |
 | `X-Balance-Remaining` | Remaining token balance after this request |
-| `X-Pod-Route` | Which source served the request: marketplace, BYOK relay, or centralized |
+| `X-Pod-Route` | Which source served the request: marketplace, key relay, or centralized |
 
 ## Errors
 

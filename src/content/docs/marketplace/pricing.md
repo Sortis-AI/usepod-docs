@@ -11,7 +11,7 @@ API and headers, prices are expressed in **USDC microunits** (1 USDC =
 
 ## The cap-at-centralized rule
 
-Marketplace and BYOK listings are **capped at the cheapest centralized price** for
+Marketplace and key relay listings are **capped at the cheapest centralized price** for
 the same model, on both the input and output axes. A provider can list below the
 centralized price to win traffic, but never above it. Consequences:
 
