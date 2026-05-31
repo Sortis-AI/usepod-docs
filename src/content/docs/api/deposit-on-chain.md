@@ -1,177 +1,188 @@
 ---
 title: Deposit on-chain (without the dashboard)
-description: Construct the DepositUsdc transaction yourself in JS or Python, and bind it to your token via deposit_code.
+description: Deposit USDC or SOL into your token via the sovereign program using Anchor — the IDL is already published on-chain.
 ---
 
 The dashboard is one front-end for funding. Behind it, every Use Pod deposit
-is a single instruction sent to the sovereign program on Solana mainnet. This
-page is the spec for building that instruction yourself — from a script, a
-bot, or any wallet that can sign a custom transaction.
+is a single instruction against an Anchor program on Solana mainnet. The
+program's IDL is already published on-chain, so building your own deposit
+flow is a few lines of typed Anchor code — no hand-rolled discriminators,
+no manual account derivation.
 
 The instruction is what the LiquidMirror parses to credit you. **A plain SPL
-USDC transfer with a memo will NOT be credited.** The `deposit_code` lives in
-the instruction data, not in a separate memo instruction.
+USDC transfer with a memo will NOT be credited.** The `deposit_code` lives
+in the instruction data, not in a separate memo instruction.
 
-## Pieces you need
+## What you need
 
-| Field | Value |
+| | |
 |---|---|
 | Sovereign program ID | `BBAdcqUkg68JXNiPQ1HR1wujfZuayyK3eQTQSYAh6FSW` |
+| Anchor IDL location | On-chain — fetched at runtime with the program ID |
 | USDC mint | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
-| SPL Token program | `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA` |
-| Associated Token program | `ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL` |
 | Network | Solana mainnet-beta |
 
-Your `deposit_code` is the 16-hex-char string you got back from
+Your `deposit_code` is the 16-hex-char string returned by
 [`POST /v1/register`](/api/register/). Treat it as the on-chain binding to
 your token — anyone who deposits with this code credits your balance, so
-treat it like a less-sensitive sibling of the API token itself.
+guard it like a less-sensitive sibling of the API token itself.
 
-## The `DepositUsdc` instruction
+## TypeScript — USDC deposit
 
-**Data (24 bytes):**
-
-| Offset | Size | Field |
-|---:|---:|---|
-| 0 | 8 | Anchor discriminator: `[184, 148, 250, 169, 224, 213, 34, 126]` |
-| 8 | 8 | `deposit_code` — 8 raw bytes (your 16-hex-char string, decoded) |
-| 16 | 8 | `amount` — USDC micro-units, `u64` little-endian (1 USDC = 1,000,000) |
-
-**Accounts (in this order):**
-
-| # | Account | Signer? | Writable? | Notes |
-|---:|---|:---:|:---:|---|
-| 0 | Depositor's USDC ATA | | ✓ | Derived `(depositor, USDC mint)` |
-| 1 | Ops wallet's USDC ATA | | ✓ | Derived `(ops_wallet, USDC mint)` |
-| 2 | Config PDA | | | `find_program_address([b"config"], program_id)` |
-| 3 | Depositor | ✓ | ✓ | Pays the fee, owns the source ATA |
-| 4 | USDC mint | | | Constant above |
-| 5 | SPL Token program | | | Constant above |
-| 6 | Associated Token program | | | Constant above |
-
-**The `ops_wallet` pubkey** is stored in the config PDA account. Read the
-config PDA, skip the 8-byte Anchor discriminator, and take the next 32 bytes:
-that's `ops_wallet`. Its USDC ATA is the destination.
-
-## JavaScript / Node.js
-
-Standalone, no Use Pod packages. Needs `@solana/web3.js`. Sign with whichever
-keypair owns the USDC you're sending.
-
-```js
-// npm i @solana/web3.js
-import {
-  Connection,
-  Keypair,
-  PublicKey,
-  Transaction,
-  TransactionInstruction,
-  sendAndConfirmTransaction,
-} from "@solana/web3.js";
+```ts
+// npm i @coral-xyz/anchor @solana/web3.js
+import * as anchor from "@coral-xyz/anchor";
+import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 
 const PROGRAM_ID = new PublicKey("BBAdcqUkg68JXNiPQ1HR1wujfZuayyK3eQTQSYAh6FSW");
 const USDC_MINT  = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
-const TOKEN_PROGRAM     = new PublicKey("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA");
-const ASSOC_TOKEN_PROG  = new PublicKey("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL");
-const DEPOSIT_USDC_DISCRIMINATOR = Uint8Array.from([184, 148, 250, 169, 224, 213, 34, 126]);
 
-function deriveAta(owner, mint) {
-  const [ata] = PublicKey.findProgramAddressSync(
-    [owner.toBuffer(), TOKEN_PROGRAM.toBuffer(), mint.toBuffer()],
-    ASSOC_TOKEN_PROG,
+async function depositUsdc(depositCode: string, amountUsdc: number) {
+  const secret = Uint8Array.from(JSON.parse(process.env.WALLET_KEYPAIR_JSON!));
+  const payer = Keypair.fromSecretKey(secret);
+  const connection = new Connection("https://api.mainnet-beta.solana.com", "confirmed");
+  const provider = new anchor.AnchorProvider(
+    connection,
+    new anchor.Wallet(payer),
+    { commitment: "confirmed" },
   );
-  return ata;
-}
 
-function u64Le(n) {
-  const b = new ArrayBuffer(8);
-  new DataView(b).setBigUint64(0, BigInt(n), true);
-  return new Uint8Array(b);
-}
+  // IDL lives on-chain at the standard Anchor address — no JSON to ship.
+  const idl = await anchor.Program.fetchIdl(PROGRAM_ID, provider);
+  if (!idl) throw new Error("on-chain IDL not found");
+  const program = new anchor.Program(idl, provider);
 
-function depositCodeBytes(hex16) {
-  if (!/^[0-9a-fA-F]{16}$/.test(hex16)) {
-    throw new Error(`deposit_code must be 16 hex chars, got "${hex16}"`);
-  }
-  const out = new Uint8Array(8);
-  for (let i = 0; i < 8; i++) out[i] = parseInt(hex16.slice(i * 2, i * 2 + 2), 16);
-  return out;
-}
+  const code = Array.from(Buffer.from(depositCode, "hex")); // 8 bytes
+  const amount = new anchor.BN(Math.round(amountUsdc * 1_000_000)); // USDC micros
 
-async function depositUsdc({ rpcUrl, payerKeypair, depositCode, amountUsdc }) {
-  const connection = new Connection(rpcUrl, "confirmed");
-  const depositor = payerKeypair.publicKey;
+  // Anchor 0.30+ resolves every other account from the IDL: the depositor's
+  // and ops_wallet's USDC ATAs, the program config PDA, the token + ATA
+  // programs (all pinned by IDL `address` constraints), and the signer.
+  const sig = await program.methods
+    .depositUsdc(code, amount)
+    .accounts({ mint: USDC_MINT })
+    .rpc();
 
-  // 1. Resolve ops_wallet from the config PDA.
-  const [configPda] = PublicKey.findProgramAddressSync(
-    [new TextEncoder().encode("config")],
-    PROGRAM_ID,
-  );
-  const configAcct = await connection.getAccountInfo(configPda);
-  if (!configAcct) throw new Error("config PDA not found — wrong network?");
-  const opsWallet = new PublicKey(configAcct.data.subarray(8, 40));
-
-  // 2. Build instruction data: discriminator(8) || code(8) || amount u64 LE(8)
-  const amountMicros = BigInt(Math.round(amountUsdc * 1_000_000));
-  const data = new Uint8Array(24);
-  data.set(DEPOSIT_USDC_DISCRIMINATOR, 0);
-  data.set(depositCodeBytes(depositCode), 8);
-  data.set(u64Le(amountMicros), 16);
-
-  // 3. Accounts in the order the program expects.
-  const ix = new TransactionInstruction({
-    programId: PROGRAM_ID,
-    keys: [
-      { pubkey: deriveAta(depositor, USDC_MINT), isSigner: false, isWritable: true },
-      { pubkey: deriveAta(opsWallet, USDC_MINT), isSigner: false, isWritable: true },
-      { pubkey: configPda,        isSigner: false, isWritable: false },
-      { pubkey: depositor,        isSigner: true,  isWritable: true  },
-      { pubkey: USDC_MINT,        isSigner: false, isWritable: false },
-      { pubkey: TOKEN_PROGRAM,    isSigner: false, isWritable: false },
-      { pubkey: ASSOC_TOKEN_PROG, isSigner: false, isWritable: false },
-    ],
-    data: Buffer.from(data),
-  });
-
-  const tx = new Transaction().add(ix);
-  const sig = await sendAndConfirmTransaction(connection, tx, [payerKeypair]);
-  console.log("deposit landed:", sig);
+  console.log("deposit:", sig);
   return sig;
 }
 
-// Usage
-const secret = Uint8Array.from(JSON.parse(process.env.WALLET_KEYPAIR_JSON));
-await depositUsdc({
-  rpcUrl: "https://api.mainnet-beta.solana.com",
-  payerKeypair: Keypair.fromSecretKey(secret),
-  depositCode: "bcb1d3eaddb99251",   // from POST /v1/register
-  amountUsdc: 5.00,
-});
+await depositUsdc("bcb1d3eaddb99251", 5.00);
 ```
 
-## Python
+## TypeScript — SOL deposit (with Jupiter swap)
 
-Standalone with `solders` (no async runtime required for the common path).
+`deposit_sol` records a SOL→USDC swap that has happened in the same
+transaction. You compose Jupiter's swap instructions in front of the
+program's `deposit_sol` instruction and send them as one v0 transaction.
+
+```ts
+// npm i @coral-xyz/anchor @solana/web3.js @solana/spl-token
+import * as anchor from "@coral-xyz/anchor";
+import {
+  AddressLookupTableAccount, Connection, Keypair, PublicKey,
+  TransactionInstruction, TransactionMessage, VersionedTransaction,
+} from "@solana/web3.js";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+
+const PROGRAM_ID = new PublicKey("BBAdcqUkg68JXNiPQ1HR1wujfZuayyK3eQTQSYAh6FSW");
+const USDC_MINT  = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+const SOL_MINT   = "So11111111111111111111111111111111111111112";
+const JUP        = "https://lite-api.jup.ag/swap/v1";
+
+const jupIxToWeb3 = (ix: any) => new TransactionInstruction({
+  programId: new PublicKey(ix.programId),
+  keys: ix.accounts.map((a: any) => ({
+    pubkey: new PublicKey(a.pubkey), isSigner: a.isSigner, isWritable: a.isWritable,
+  })),
+  data: Buffer.from(ix.data, "base64"),
+});
+
+async function depositSol(depositCode: string, lamports: bigint, slippageBps = 50) {
+  const secret = Uint8Array.from(JSON.parse(process.env.WALLET_KEYPAIR_JSON!));
+  const payer = Keypair.fromSecretKey(secret);
+  const connection = new Connection("https://api.mainnet-beta.solana.com", "confirmed");
+  const provider = new anchor.AnchorProvider(
+    connection, new anchor.Wallet(payer), { commitment: "confirmed" },
+  );
+  const idl = await anchor.Program.fetchIdl(PROGRAM_ID, provider);
+  const program = new anchor.Program(idl!, provider);
+
+  // 1. Jupiter quote + swap-instructions targeting the depositor's USDC ATA.
+  const depositorUsdcAta = getAssociatedTokenAddressSync(USDC_MINT, payer.publicKey);
+  const quote = await fetch(
+    `${JUP}/quote?inputMint=${SOL_MINT}&outputMint=${USDC_MINT.toBase58()}` +
+    `&amount=${lamports}&slippageBps=${slippageBps}`,
+  ).then(r => r.json());
+
+  const swap = await fetch(`${JUP}/swap-instructions`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      quoteResponse: quote,
+      userPublicKey: payer.publicKey.toBase58(),
+      destinationTokenAccount: depositorUsdcAta.toBase58(),
+    }),
+  }).then(r => r.json());
+
+  const altAccounts: AddressLookupTableAccount[] = await Promise.all(
+    (swap.addressLookupTableAddresses || []).map(async (a: string) =>
+      (await connection.getAddressLookupTable(new PublicKey(a))).value!),
+  );
+
+  const preIx = [
+    ...(swap.computeBudgetInstructions || []),
+    ...(swap.setupInstructions || []),
+    swap.swapInstruction,
+  ].map(jupIxToWeb3);
+
+  // 2. depositSol via Anchor — composed AFTER the swap in the same tx.
+  const code = Array.from(Buffer.from(depositCode, "hex"));
+  const usdcOutMin = new anchor.BN(quote.otherAmountThreshold);
+  const depositTx = await program.methods
+    .depositSol(code, new anchor.BN(lamports.toString()), usdcOutMin)
+    .accounts({ usdcMint: USDC_MINT })
+    .preInstructions(preIx)
+    .transaction();
+
+  // 3. Compile as v0 with the ALTs Jupiter returned, then sign + send.
+  const { blockhash } = await connection.getLatestBlockhash();
+  const message = new TransactionMessage({
+    payerKey: payer.publicKey,
+    recentBlockhash: blockhash,
+    instructions: depositTx.instructions,
+  }).compileToV0Message(altAccounts);
+  const vtx = new VersionedTransaction(message);
+  vtx.sign([payer]);
+
+  const sig = await connection.sendTransaction(vtx);
+  console.log("deposit:", sig);
+  return sig;
+}
+
+await depositSol("bcb1d3eaddb99251", 50_000_000n); // 0.05 SOL
+```
+
+## Python — USDC deposit
+
+`anchorpy` is the Python Anchor client; it fetches the same on-chain IDL and
+exposes typed instruction builders. Account resolution for PDA seeds that
+reference a different account's state (`config.ops_wallet`) isn't automatic
+in the Python client today, so we resolve `ops_wallet` and the two ATAs
+ourselves and pass them through `Context(accounts=...)`.
 
 ```python
-# pip install solders solana
-import hashlib
-import json
-import os
-import struct
-
+# pip install anchorpy solders solana
+import asyncio, json, os
+from anchorpy import Program, Provider, Wallet, Context
 from solders.keypair import Keypair
 from solders.pubkey import Pubkey
-from solders.instruction import AccountMeta, Instruction
-from solders.transaction import Transaction
-from solana.rpc.api import Client
+from solana.rpc.async_api import AsyncClient
 
-PROGRAM_ID = Pubkey.from_string("BBAdcqUkg68JXNiPQ1HR1wujfZuayyK3eQTQSYAh6FSW")
-USDC_MINT  = Pubkey.from_string("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
+PROGRAM_ID       = Pubkey.from_string("BBAdcqUkg68JXNiPQ1HR1wujfZuayyK3eQTQSYAh6FSW")
+USDC_MINT        = Pubkey.from_string("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
 TOKEN_PROGRAM    = Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
 ASSOC_TOKEN_PROG = Pubkey.from_string("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL")
-DEPOSIT_USDC_DISCRIMINATOR = bytes([184, 148, 250, 169, 224, 213, 34, 126])
-
 
 def derive_ata(owner: Pubkey, mint: Pubkey) -> Pubkey:
     ata, _ = Pubkey.find_program_address(
@@ -180,66 +191,160 @@ def derive_ata(owner: Pubkey, mint: Pubkey) -> Pubkey:
     )
     return ata
 
+async def deposit_usdc(deposit_code: str, amount_usdc: float) -> str:
+    payer = Keypair.from_bytes(bytes(json.loads(os.environ["WALLET_KEYPAIR_JSON"])))
+    client = AsyncClient("https://api.mainnet-beta.solana.com")
+    provider = Provider(client, Wallet(payer))
 
-def deposit_code_bytes(hex16: str) -> bytes:
-    if len(hex16) != 16 or not all(c in "0123456789abcdefABCDEF" for c in hex16):
-        raise ValueError(f'deposit_code must be 16 hex chars, got "{hex16}"')
-    return bytes.fromhex(hex16)
+    # Fetch IDL from on-chain at the standard Anchor address.
+    idl = await Program.fetch_idl(PROGRAM_ID, provider)
+    program = Program(idl, PROGRAM_ID, provider)
 
-
-def deposit_usdc(rpc_url: str, payer: Keypair, deposit_code: str, amount_usdc: float) -> str:
-    client = Client(rpc_url)
-    depositor = payer.pubkey()
-
-    # 1. Resolve ops_wallet from the config PDA.
+    # Resolve ops_wallet from on-chain config — the IDL declares
+    # ops_wallet_ata's seeds as ["config.ops_wallet", token_program, mint].
     config_pda, _ = Pubkey.find_program_address([b"config"], PROGRAM_ID)
-    config_info = client.get_account_info(config_pda).value
-    if config_info is None:
-        raise RuntimeError("config PDA not found — wrong network?")
-    ops_wallet = Pubkey.from_bytes(config_info.data[8:40])
+    config_acct = (await client.get_account_info(config_pda)).value
+    if config_acct is None:
+        raise RuntimeError("config PDA not found")
+    ops_wallet = Pubkey.from_bytes(bytes(config_acct.data[8:40]))
 
-    # 2. Build instruction data: discriminator(8) || code(8) || amount u64 LE(8)
-    amount_micros = round(amount_usdc * 1_000_000)
-    data = (
-        DEPOSIT_USDC_DISCRIMINATOR
-        + deposit_code_bytes(deposit_code)
-        + struct.pack("<Q", amount_micros)
+    sig = await program.rpc["deposit_usdc"](
+        list(bytes.fromhex(deposit_code)),
+        round(amount_usdc * 1_000_000),
+        ctx=Context(accounts={
+            "depositor_ata":             derive_ata(payer.pubkey(), USDC_MINT),
+            "ops_wallet_ata":            derive_ata(ops_wallet, USDC_MINT),
+            "config":                    config_pda,
+            "depositor":                 payer.pubkey(),
+            "mint":                      USDC_MINT,
+            "token_program":             TOKEN_PROGRAM,
+            "associated_token_program":  ASSOC_TOKEN_PROG,
+        }),
     )
-
-    # 3. Accounts in the order the program expects.
-    accounts = [
-        AccountMeta(derive_ata(depositor, USDC_MINT), is_signer=False, is_writable=True),
-        AccountMeta(derive_ata(ops_wallet, USDC_MINT), is_signer=False, is_writable=True),
-        AccountMeta(config_pda,        is_signer=False, is_writable=False),
-        AccountMeta(depositor,         is_signer=True,  is_writable=True),
-        AccountMeta(USDC_MINT,         is_signer=False, is_writable=False),
-        AccountMeta(TOKEN_PROGRAM,     is_signer=False, is_writable=False),
-        AccountMeta(ASSOC_TOKEN_PROG,  is_signer=False, is_writable=False),
-    ]
-    ix = Instruction(PROGRAM_ID, data, accounts)
-
-    blockhash = client.get_latest_blockhash().value.blockhash
-    tx = Transaction.new_signed_with_payer([ix], depositor, [payer], blockhash)
-    sig = client.send_transaction(tx).value
-    print(f"deposit landed: {sig}")
+    print(f"deposit: {sig}")
     return str(sig)
 
+asyncio.run(deposit_usdc("bcb1d3eaddb99251", 5.00))
+```
 
-if __name__ == "__main__":
-    secret = bytes(json.loads(os.environ["WALLET_KEYPAIR_JSON"]))
-    deposit_usdc(
-        rpc_url="https://api.mainnet-beta.solana.com",
-        payer=Keypair.from_bytes(secret),
-        deposit_code="bcb1d3eaddb99251",   # from POST /v1/register
-        amount_usdc=5.00,
+## Python — SOL deposit (with Jupiter swap)
+
+Same structure as the TypeScript SOL example: get Jupiter swap instructions,
+deserialize them as `solders` `Instruction`s, build the program's
+`deposit_sol` instruction via `anchorpy`, compile a v0 transaction with the
+ALTs Jupiter returned.
+
+```python
+# pip install anchorpy solders solana httpx
+import asyncio, base64, json, os, struct
+import httpx
+from anchorpy import Program, Provider, Wallet, Context
+from solders.keypair import Keypair
+from solders.pubkey import Pubkey
+from solders.instruction import AccountMeta, Instruction
+from solders.message import MessageV0
+from solders.transaction import VersionedTransaction
+from solders.address_lookup_table_account import AddressLookupTableAccount
+from solana.rpc.async_api import AsyncClient
+
+PROGRAM_ID       = Pubkey.from_string("BBAdcqUkg68JXNiPQ1HR1wujfZuayyK3eQTQSYAh6FSW")
+USDC_MINT        = Pubkey.from_string("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v")
+TOKEN_PROGRAM    = Pubkey.from_string("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA")
+ASSOC_TOKEN_PROG = Pubkey.from_string("ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL")
+SOL_MINT = "So11111111111111111111111111111111111111112"
+JUP      = "https://lite-api.jup.ag/swap/v1"
+
+def derive_ata(owner: Pubkey, mint: Pubkey) -> Pubkey:
+    ata, _ = Pubkey.find_program_address(
+        [bytes(owner), bytes(TOKEN_PROGRAM), bytes(mint)],
+        ASSOC_TOKEN_PROG,
     )
+    return ata
+
+def jup_ix_to_solders(ix: dict) -> Instruction:
+    return Instruction(
+        program_id=Pubkey.from_string(ix["programId"]),
+        accounts=[
+            AccountMeta(Pubkey.from_string(a["pubkey"]), is_signer=a["isSigner"], is_writable=a["isWritable"])
+            for a in ix["accounts"]
+        ],
+        data=base64.b64decode(ix["data"]),
+    )
+
+async def deposit_sol(deposit_code: str, lamports: int, slippage_bps: int = 50) -> str:
+    payer = Keypair.from_bytes(bytes(json.loads(os.environ["WALLET_KEYPAIR_JSON"])))
+    client = AsyncClient("https://api.mainnet-beta.solana.com")
+    provider = Provider(client, Wallet(payer))
+    idl = await Program.fetch_idl(PROGRAM_ID, provider)
+    program = Program(idl, PROGRAM_ID, provider)
+
+    # 1. Jupiter quote + swap-instructions delivering USDC to depositor's ATA.
+    depositor_usdc_ata = derive_ata(payer.pubkey(), USDC_MINT)
+    async with httpx.AsyncClient() as http:
+        quote = (await http.get(
+            f"{JUP}/quote?inputMint={SOL_MINT}&outputMint={USDC_MINT}"
+            f"&amount={lamports}&slippageBps={slippage_bps}",
+        )).json()
+        swap = (await http.post(f"{JUP}/swap-instructions", json={
+            "quoteResponse": quote,
+            "userPublicKey": str(payer.pubkey()),
+            "destinationTokenAccount": str(depositor_usdc_ata),
+        })).json()
+
+    pre_ixs = [
+        jup_ix_to_solders(ix) for ix in
+        (swap.get("computeBudgetInstructions") or [])
+        + (swap.get("setupInstructions") or [])
+        + [swap["swapInstruction"]]
+    ]
+
+    # 2. Resolve ops_wallet and build deposit_sol via anchorpy.
+    config_pda, _ = Pubkey.find_program_address([b"config"], PROGRAM_ID)
+    config_acct = (await client.get_account_info(config_pda)).value
+    ops_wallet = Pubkey.from_bytes(bytes(config_acct.data[8:40]))
+
+    deposit_ix = await program.instruction["deposit_sol"](
+        list(bytes.fromhex(deposit_code)),
+        lamports,
+        int(quote["otherAmountThreshold"]),
+        ctx=Context(accounts={
+            "depositor":                  payer.pubkey(),
+            "depositor_usdc":             depositor_usdc_ata,
+            "ops_wallet_ata":             derive_ata(ops_wallet, USDC_MINT),
+            "config":                     config_pda,
+            "usdc_mint":                  USDC_MINT,
+            "token_program":              TOKEN_PROGRAM,
+            "associated_token_program":   ASSOC_TOKEN_PROG,
+        }),
+    )
+
+    # 3. Compile v0 transaction with Jupiter's address-lookup tables, sign, send.
+    alt_pubkeys = [Pubkey.from_string(a) for a in (swap.get("addressLookupTableAddresses") or [])]
+    alts: list[AddressLookupTableAccount] = []
+    for pk in alt_pubkeys:
+        alt = (await client.get_address_lookup_table(pk)).value
+        if alt is not None:
+            alts.append(alt)
+
+    blockhash = (await client.get_latest_blockhash()).value.blockhash
+    message = MessageV0.try_compile(
+        payer=payer.pubkey(),
+        instructions=pre_ixs + [deposit_ix],
+        address_lookup_table_accounts=alts,
+        recent_blockhash=blockhash,
+    )
+    vtx = VersionedTransaction(message, [payer])
+    sig = (await client.send_transaction(vtx)).value
+    print(f"deposit: {sig}")
+    return str(sig)
+
+asyncio.run(deposit_sol("bcb1d3eaddb99251", 50_000_000))  # 0.05 SOL
 ```
 
 ## Verifying the credit
 
-Once the transaction confirms on-chain, the LiquidMirror sees a `Program data:`
-log line emitted by the program and credits your token's balance. The event is
-96 bytes:
+Once the transaction confirms, the program emits a `Program data:` log line
+the LiquidMirror parses to credit your token. `DepositEvent` (USDC) is:
 
 ```
 [ 8 bytes ] discriminator = sha256("event:DepositEvent")[0..8]
@@ -250,7 +355,9 @@ log line emitted by the program and credits your token's balance. The event is
 [ 8 bytes ] timestamp (i64 LE, Unix seconds)
 ```
 
-Your token balance updates within a few seconds of finalization. Confirm via:
+`SolDepositEvent` (SOL→USDC) carries `sol_lamports` and `usdc_received`
+instead of a single `amount`. Your token balance updates within a few
+seconds of finalization. Confirm with:
 
 ```bash
 curl -s https://api.usepod.ai/proxy/<token>/balance
@@ -261,35 +368,28 @@ The `usdc_balance` field is in micro-units (divide by 1,000,000 for USDC).
 ## Common errors
 
 - **"deposit landed but my balance didn't update."** Check the tx on
-  Solscan / Solana Explorer. If `err: null`, the on-chain side is fine — the
-  most likely cause is `deposit_code` mismatch. The 16 hex chars must come
-  verbatim from a real `/v1/register` response; a random 16 hex chars binds
-  to no token and is silently ignored.
-- **"AccountNotFound for the ops wallet ATA."** The ops wallet's USDC ATA is
-  expected to already exist on-chain. If it ever doesn't, fund any tiny USDC
-  transfer to it from the dashboard once to materialize it, then retry.
-- **"insufficient funds for fee."** Depositor needs SOL for the fee in
-  addition to the USDC for the deposit. ~0.00001 SOL covers a basic tx.
-- **The transfer succeeds but you don't see logs.** You probably sent a plain
-  SPL transfer instead of invoking the sovereign program. A plain transfer
-  routes USDC to the destination ATA but does NOT emit `DepositEvent` — there
-  is no way for the LiquidMirror to know it was meant for your token, so it
-  won't be credited. You must build the `DepositUsdc` instruction as shown.
+  Solscan or Solana Explorer. If `err: null`, the on-chain side is fine —
+  the most likely cause is `deposit_code` mismatch. The 16 hex chars must
+  come verbatim from a real `/v1/register` response; a random 16 hex chars
+  binds to no token and is silently ignored.
+- **"AccountNotFound for the ops wallet ATA."** The ops wallet's USDC ATA
+  is expected to already exist on-chain. If it ever doesn't, fund any tiny
+  USDC transfer to it from the dashboard once to materialize it, then
+  retry.
+- **"insufficient funds for fee."** Depositor needs SOL for the network
+  fee in addition to the USDC for the deposit. ~0.00001 SOL covers a
+  basic tx; the SOL-deposit path naturally has its own SOL.
+- **The transfer succeeds but your balance doesn't update.** You probably
+  sent a plain SPL transfer instead of invoking the sovereign program. A
+  plain transfer routes USDC to the destination ATA but does NOT emit
+  `DepositEvent` — there's no way for the LiquidMirror to know which
+  token to credit, so it won't be. You must build `deposit_usdc` (or
+  `deposit_sol`) through the program as shown above.
 
 ## `POD-BOND-XXXXXXXX` carve-out
 
 If your `deposit_code` starts with `POD-BOND-`, the deposit routes to the
-provider-bond ledger instead of a user balance. This is the supply-side flow
-returned by `/v1/host/enroll`. **Regular users with `/v1/register` codes
-should not use this prefix.** A `/v1/register` code is always 16 hex chars
-with no prefix.
-
-## SOL → USDC deposits
-
-The dashboard supports a SOL → USDC swap-and-deposit path via Jupiter, using
-the program's separate `DepositSol` instruction. The code lives in
-[`app/dashboard/src/lib/contract.ts`](https://github.com/Sortis-AI/usepod/blob/main/app/dashboard/src/lib/contract.ts)
-(`buildDepositSolTx`). It's a versioned transaction with Address Lookup
-Tables and is meaningfully more complex than the USDC path above — most
-operators with their own scripts find it easier to swap to USDC first (in
-their wallet) and then run the USDC deposit shown here.
+provider-bond ledger instead of a user balance. That's the supply-side
+flow returned by `/v1/host/enroll`. **Regular users with `/v1/register`
+codes should not use this prefix.** A `/v1/register` code is always 16 hex
+chars with no prefix.
