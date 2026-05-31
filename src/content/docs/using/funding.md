@@ -14,9 +14,17 @@ deposits. A small processing surcharge is added on top of the credit you choose.
 
 ## USDC deposit (Solana)
 
-Send USDC to the deposit address returned when you
-[registered your token](/api/register/). Deposits are detected on-chain and
-credited to your balance automatically.
+The dashboard at [`usepod.ai/fund`](https://usepod.ai/fund) handles this end
+to end — connect a wallet, choose USDC, approve. Behind the scenes it sends
+a `DepositUsdc` instruction to the sovereign program with your token's
+`deposit_code` embedded, and the LiquidMirror credits your balance within
+seconds of finalization.
+
+To deposit from a script or a wallet that signs custom transactions, build
+the instruction yourself — see [Deposit on-chain](/api/deposit-on-chain/)
+for the full spec and ready-to-paste JS + Python snippets. **A plain SPL
+USDC transfer with a memo will NOT be credited** — the binding to your
+token lives inside the instruction data, not in a separate memo.
 
 ## Checking your balance
 
