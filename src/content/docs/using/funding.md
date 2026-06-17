@@ -26,6 +26,12 @@ for the full spec and ready-to-paste JS + Python snippets. **A plain SPL
 USDC transfer with a memo will NOT be credited** — the binding to your
 token lives inside the instruction data, not in a separate memo.
 
+## No account: pay per request
+
+If you'd rather not hold a balance at all, [x402](/api/x402-payments/) lets you
+pay for each request individually by sending USDC or SOL on Solana — no token, no
+top-up. It suits agents and one-off automated callers with a Solana wallet.
+
 ## Checking your balance
 
 Every proxied response carries an `X-Balance-Remaining` header. You can also see

@@ -151,6 +151,7 @@ export default defineConfig({
 					items: [
 						{ label: 'Register a token', slug: 'api/register' },
 						{ label: 'Inference proxy', slug: 'api/proxy' },
+						{ label: 'Pay per request with x402', slug: 'api/x402-payments' },
 						{ label: 'Deposit on-chain', slug: 'api/deposit-on-chain' },
 					],
 				},

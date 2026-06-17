@@ -6,6 +6,9 @@ description: The drop-in proxy path, supported endpoints, request headers, and r
 The proxy is the inference entry point. It mirrors the upstream OpenAI/Anthropic
 API surface, with your token in the URL path.
 
+Prefer to pay per request with no token at all? See
+[Pay per request with x402](/api/x402-payments/).
+
 ## Path
 
 ```http
