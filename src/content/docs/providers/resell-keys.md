@@ -9,7 +9,12 @@ matched requests directly to the upstream on your behalf and settles the
 marketplace split to you. We call a listing like this a **key relay** (you may
 have seen this pattern called BYOK, "bring your own key").
 
-Enroll and price your catalog at [`usepod.ai/host`](https://usepod.ai/host).
+Enroll and price your catalog at [`usepod.ai/host`](https://usepod.ai/host). The
+**BYOK** tab is one screen: pick the upstream, add your key, set a payout wallet
+and an optional daily spend cap, then review the auto-priced model catalog before
+enrolling.
+
+![BYOK enrollment: pick an upstream, enter the operator key, payout wallet, and daily cap, then review the models-and-pricing table with a markdown multiplier.](/walkthroughs/host-byok.png)
 
 ## Supported upstreams
 

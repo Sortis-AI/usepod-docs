@@ -40,6 +40,22 @@ already pay for — and set your resale prices.
 You earn **80% of every settled inference**. Withdraw to a Solana wallet on
 demand — see [Earnings & cashout](/providers/earnings-and-cashout/).
 
+## Walk through it in the dashboard
+
+The host area at [`usepod.ai/host`](https://usepod.ai/host) guides enrollment end
+to end.
+
+**Onboarding.** The Onboarding tab walks the four steps — install the agent, post
+the bond, pair the machine, and prove it's live — each with the exact command to
+run on your GPU box.
+
+![Host onboarding stepper: install, bond, pair, live, with the install commands and a Continue to bond button.](/walkthroughs/host-onboarding.png)
+
+**No inference server yet?** The **From scratch** tab gives you three commands to
+install llama.cpp, download a model, and run the agent on a fresh GPU machine.
+
+![The From-scratch tab: check hardware, install llama.cpp + a model + the agent, start the server, and pair.](/walkthroughs/host-start.png)
+
 ## Two ways to supply
 
 - **Self-hosted backend.** The agent dispatches jobs to your local inference
