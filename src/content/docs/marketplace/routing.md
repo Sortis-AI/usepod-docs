@@ -54,9 +54,29 @@ request to the providers you want with `X-Pod-Providers`:
 -H "X-Pod-Providers: openai,openrouter"
 ```
 
-Valid names are `anthropic`, `openai`, `bedrock`, `venice`, `together`, `groq`,
-`openrouter`, `nousresearch`, `google`, `surplus`, `c0mpute`, and `uomi`. The
-order you list them in is the order they are tried.
+The order you list them in is the order they are tried.
+
+### Valid provider names
+
+| Name | Provider | Notes |
+| --- | --- | --- |
+| `anthropic` | Anthropic | First-party Claude models, Anthropic Messages format upstream |
+| `openai` | OpenAI | First-party GPT models |
+| `bedrock` | AWS Bedrock | Claude via AWS; Anthropic Messages format upstream |
+| `venice` | Venice | Privacy-focused, open-weight models |
+| `together` | Together AI | Open-weight models |
+| `groq` | Groq | LPU-served open-weight models, high throughput |
+| `openrouter` | OpenRouter | Meta-aggregator, widest catalog |
+| `nousresearch` | Nous Research | Hermes family and other open-weight models |
+| `google` | Google | Gemini models |
+| `surplus` | Surplus Intelligence | Order-book meta-aggregator; normally the price backstop tier |
+| `c0mpute` | c0mpute.ai | Per-request (flat-fee) priced models only; reachable only by explicit model selection |
+| `uomi` | UomiRouter | Aggregating router of open-weight models |
+
+A pinned provider still has to have a listing for the model you request — the
+format translation between OpenAI and Anthropic API shapes is handled for you,
+but pinning `venice` for a model Venice doesn't carry is an unsatisfiable pin
+and fails with the `503` described below.
 
 Three things to know:
 
