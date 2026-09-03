@@ -31,9 +31,12 @@ Common endpoints behind the proxy:
 | `Content-Type: application/json` | yes | Standard JSON body |
 | `X-Pod-Max-Price-Input` | no | Max price per million input tokens (USDC microunits) |
 | `X-Pod-Max-Price-Output` | no | Max price per million output tokens (USDC microunits) |
+| `X-Pod-Routing-Mode` | no | `auto` (default), `marketplace-only`, or `centralized-only` |
+| `X-Pod-Providers` | no | Comma-separated provider names to pin this request to |
 
 The `Authorization` / `api_key` your SDK sends is ignored — auth is the token in
-the path. See [Spend controls](/using/spend-controls/) for the price headers.
+the path. See [Spend controls](/using/spend-controls/) for the price headers and
+[Routing & matching](/marketplace/routing/) for the routing headers.
 
 ## Response headers
 
@@ -41,6 +44,7 @@ the path. See [Spend controls](/using/spend-controls/) for the price headers.
 | --- | --- |
 | `X-Balance-Remaining` | Remaining token balance after this request |
 | `X-Pod-Route` | Which source served the request: marketplace, key relay, or centralized |
+| `X-Pod-Provider-Id` | The specific provider that served it — a provider name for centralized routes, a provider UUID for marketplace and key-relay routes |
 
 ## Errors
 

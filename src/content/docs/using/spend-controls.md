@@ -36,3 +36,20 @@ curl https://api.usepod.ai/proxy/<token>/v1/chat/completions \
   no-provider-at-price result instead of overcharging.
 
 See [Routing & matching](/marketplace/routing/) for the full selection order.
+
+## Controlling *who* serves you, not just the price
+
+A price ceiling constrains what a request may cost, not which provider fills it.
+If you need the second — a fixed set of providers so your latency and throughput
+stay put between deploys — pin the request with `X-Pod-Providers`:
+
+```bash title="Only Venice, whatever the price"
+curl https://api.usepod.ai/proxy/<token>/v1/chat/completions \
+  -H "content-type: application/json" \
+  -H "X-Pod-Providers: venice" \
+  -d '{"model":"gpt-5.5","messages":[{"role":"user","content":"hi"}]}'
+```
+
+The two compose: a pin narrows the candidate set, and a ceiling still caps what
+any of them may charge. See [Pinning specific
+providers](/marketplace/routing/#pinning-specific-providers).
