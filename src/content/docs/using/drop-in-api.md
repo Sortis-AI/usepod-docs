@@ -15,8 +15,8 @@ SDKs, and tools work unchanged.
 | OpenAI-compatible | `https://api.usepod.ai/proxy/<token>/v1` |
 
 The proxy path mirrors the upstream API surface, so `…/v1/chat/completions`,
-`…/v1/messages`, `…/v1/models`, and streaming all behave as the underlying
-provider does.
+`…/v1/messages`, `…/v1/models`, `…/v1/responses`, and streaming all behave as
+the underlying provider does.
 
 ## Examples
 
@@ -42,6 +42,24 @@ resp = client.chat.completions.create(
 )
 print(resp.choices[0].message.content)
 ```
+
+```toml title="Codex CLI (~/.codex/config.toml)"
+model = "gpt-5.5"
+model_provider = "usepod"
+
+[model_providers.usepod]
+name = "UsePod"
+base_url = "https://api.usepod.ai/proxy/<token>/v1"
+wire_api = "responses"
+```
+
+Codex CLI only speaks the OpenAI Responses API and ignores `OPENAI_API_KEY` /
+`OPENAI_BASE_URL`, so it needs this config file rather than the environment
+variables above. No API key is required — the token in the URL authenticates.
+Run `codex` after saving the file; any UsePod model id works as `model`. The
+Responses endpoint is stateless (`previous_response_id` is rejected — Codex
+resends history by default) and ignores hosted tools such as `web_search`;
+streaming and tool calls both work.
 
 ## Response headers
 

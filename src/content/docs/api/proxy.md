@@ -23,6 +23,7 @@ Common endpoints behind the proxy:
 | `/v1/chat/completions` | OpenAI chat completions (streaming and non-streaming) |
 | `/v1/messages` | Anthropic messages |
 | `/v1/models` | Model listing |
+| `/v1/responses` (also `/responses`) | OpenAI Responses API, translated onto the same routing and billing as chat completions. Streaming and tool calls work; stateless — `previous_response_id` is rejected, so clients resend history — and hosted tools (`web_search`, `file_search`, `tool_search`) are ignored. Used by Codex CLI, which speaks only this surface. |
 
 ## Request headers
 
