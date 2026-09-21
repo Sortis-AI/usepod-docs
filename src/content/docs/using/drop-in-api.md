@@ -44,7 +44,7 @@ print(resp.choices[0].message.content)
 ```
 
 ```toml title="Codex CLI (~/.codex/config.toml)"
-model = "gpt-5.5"
+model = "deepseek-v4-1-flash"
 model_provider = "usepod"
 
 [model_providers.usepod]
