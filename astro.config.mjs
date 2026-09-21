@@ -130,6 +130,18 @@ export default defineConfig({
 					],
 				},
 				{
+					label: 'Integrations',
+					items: [
+						{ label: 'All integrations', slug: 'integrations' },
+						{ label: 'Claude Code', slug: 'integrations/claude-code' },
+						{ label: 'Codex CLI', slug: 'integrations/codex' },
+						{ label: 'OpenCode', slug: 'integrations/opencode' },
+						{ label: 'Cline', slug: 'integrations/cline' },
+						{ label: 'Aider', slug: 'integrations/aider' },
+						{ label: 'Cursor', slug: 'integrations/cursor' },
+					],
+				},
+				{
 					label: 'Running a provider (supply side)',
 					items: [
 						{ label: 'Quickstart', slug: 'providers/quickstart' },
