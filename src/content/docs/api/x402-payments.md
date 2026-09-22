@@ -1,16 +1,26 @@
 ---
 title: Pay per request with x402
-description: Accountless, pay-as-you-go inference — pay each call with USDC or SOL on Solana, verified directly on-chain. No token, no API key.
+description: Accountless, pay-as-you-go inference — pay each call with USDC or SOL on Solana, in the standard x402 dialect or ours, verified on-chain. No token, no API key.
 ---
 
-Most of Use Pod runs on a prepaid token balance. **x402** is the accountless
+Most of UsePod runs on a prepaid token balance. **x402** is the accountless
 alternative: no token, no API key, no signup — you pay for each request by
-sending USDC (or native SOL) on Solana, and the gateway verifies the payment
-**directly on-chain** before serving the call. There is no facilitator and no
-intermediary holding your funds.
+sending USDC (or SOL) on Solana, and the gateway verifies the payment
+**on-chain** before serving the call. Nobody holds your funds in between: the
+transfer goes from your wallet to ours, and the gateway reads the chain to
+confirm it landed.
+
+Two kinds of client work here, and the same quote serves both. A client
+written against the [x402 specification](https://x402.org) — `@x402/fetch`, the
+Solana x402 SDKs, an agent framework with x402 built in — reads the standard
+entries in the quote and hands the gateway a partially-signed transaction to
+co-sign and broadcast, exactly as the spec's `exact` scheme on Solana lays out.
+A client you write yourself against this page can instead broadcast its own
+transfer and prove it with the signature, which is the flow every example
+below uses. Pick whichever you already have; you do not need both.
 
 It is a good fit for agents and one-off automated callers that have a Solana
-wallet but no Use Pod account.
+wallet but no UsePod account.
 
 ## Endpoints
 
@@ -73,6 +83,15 @@ Base64-decode the header to JSON. `accepts` is a menu of payment options:
 The SOL rail is priced from a live SOL/USD rate at quote time, so its lamport
 amount tracks the same dollar cap as the USDC rail. Both settle on Solana.
 
+The same `accepts` list also carries the **standard-dialect** entries a spec
+client expects — `asset` is the SPL mint rather than a ticker, the recipient is
+`payTo`, the amount is a base-unit string under `amount` and
+`maxAmountRequired`, and `extra.feePayer` names the wallet that will pay the
+network fee. They are appended after the entries above, so a client that reads
+by position sees what it always saw, and a client that reads by field finds
+what it needs. If you are hand-rolling a client, use the entries in the table;
+if you are using an x402 library, it will pick the standard ones on its own.
+
 ### The payment signature (`PAYMENT-SIGNATURE`)
 
 After your on-chain payment confirms, build this JSON, base64-encode it, and send
@@ -88,6 +107,27 @@ it as the `PAYMENT-SIGNATURE` header on the retry:
 }
 ```
 
+### Standard x402 clients
+
+If your client speaks the x402 `exact` scheme for Solana, nothing above applies
+to you and nothing extra is required of you. Your library will select a
+standard entry (USDC by mint, or SOL as the wrapped-SOL mint
+`So11111111111111111111111111111111111111112`, since the scheme has no
+native-lamport transfer), build a `TransferChecked` into our associated token
+account with `extra.feePayer` as the fee payer, sign it as the token owner, and
+send it back as `payload.transaction`. The gateway checks that the transaction
+does exactly that one thing and nothing else, adds the fee-payer signature,
+broadcasts it, waits for confirmation, and serves the request. The
+`PAYMENT-RESPONSE` header carries the on-chain transaction signature.
+
+Because the gateway pays the network fee on that path, the standard entries are
+floored at one cent: a quote whose cap comes to less advertises `10000`
+microunits, and whatever you paid above the actual cost of the call is credited
+to your wallet's balance just as it is on every other rail. The fee payer is a
+dedicated wallet with a daily budget for sponsored fees; if that budget is ever
+exhausted the gateway says so in the error and the self-broadcast flow above
+keeps working.
+
 ## What you're charged
 
 The quoted amount is a **ceiling**, not the final price. The gateway charges
@@ -98,15 +138,26 @@ never overpay for the call itself.
 
 ## Verification & safety
 
-- **Direct on-chain.** The gateway verifies your payment by reading the
-  transaction from Solana (it never broadcasts on your behalf). For USDC it
-  checks the token-balance delta into `pay_to`; for SOL, the native-balance
-  delta. The payment must credit at least the quoted amount.
-- **Solana only.** USDC and native SOL on Solana mainnet are supported today.
+- **Verified on-chain, whichever path.** The gateway reads the confirmed
+  transaction from Solana and checks the balance delta into `pay_to`: the
+  token balance for USDC and wrapped SOL, the native balance for SOL. The
+  payment must credit at least the quoted amount. A signature alone never
+  settles anything.
+- **Co-signing is narrow.** On the standard path the gateway signs a
+  transaction it did not build, so it first proves the transaction contains a
+  single token transfer to our own account, that our key appears nowhere but
+  as fee payer, and that only known programs are invoked; anything else is
+  rejected before a signature is made.
+- **Solana only.** USDC and SOL on Solana mainnet are supported today, on Base
+  the USDC rail through the standard facilitator flow.
 - **Replay-protected.** A given transaction signature can settle exactly one
-  quote. Reusing it for a second quote is rejected.
-- **Fees.** Your wallet pays the Solana network fee (~5,000 lamports) on top of
-  the payment, so it needs a little SOL regardless of which rail you use.
+  quote. Reusing it for a second quote is rejected, and re-sending the same
+  partially-signed transaction converges on the payment it already made rather
+  than broadcasting twice.
+- **Fees.** On the flow described above your wallet pays the Solana network fee
+  (~5,000 lamports) on top of the payment, so it needs a little SOL regardless
+  of which rail you use. On the standard path the gateway is the fee payer and
+  your wallet needs no SOL at all.
 
 ## Worked example (Python)
 
@@ -115,7 +166,7 @@ A complete, runnable client for the USDC rail. It quotes, pays USDC on-chain
 
 ```python
 #!/usr/bin/env python3
-"""Pay-per-call against the Use Pod API with x402 (USDC on Solana).
+"""Pay-per-call against the UsePod API with x402 (USDC on Solana).
 
 Deps: pip install requests==2.34.2 solana==0.36.12 solders==0.27.1
 Env:  SOLANA_KEYPAIR (path to Solana keypair JSON), SOLANA_RPC_URL.
