@@ -47,18 +47,22 @@ the path. See [Spend controls](/using/spend-controls/) for the price headers and
 | `X-Pod-Route` | Which source served the request: marketplace, key relay, or centralized |
 | `X-Pod-Provider-Id` | The specific provider that served it — a provider name for centralized routes, a provider UUID for marketplace and key-relay routes |
 
-## Request size
+## Limits
 
-Inference endpoints (chat completions, messages, Responses, image generation and
-edits, and the [x402](/api/x402-payments/) routes) accept request bodies up to
-**15 MiB** (15,728,640 bytes), measured as the raw HTTP body, so base64-encoded
-images count at their encoded size. Larger bodies are rejected with `413
-Payload Too Large` before routing, and nothing is billed. Other endpoints keep a
-2 MB limit.
+| Limit | Value | Applies to | When exceeded |
+| --- | --- | --- | --- |
+| Request size | **15 MiB** (15,728,640 bytes) per request | Inference endpoints: chat completions, messages, Responses, token counting, image generation and edits, and the [x402](/api/x402-payments/) routes | `413` |
+| Requests per minute | Set per token | Requests made with a token | `429` with `Retry-After` |
+| Concurrent requests | Set per token | Requests made with a token | `429` with `Retry-After` |
+
+Request size is measured on the raw HTTP body, so base64-encoded images count at
+their encoded size. An oversized request is rejected on arrival, before routing,
+and nothing is billed.
 
 ## Errors
 
-- A body over the **15 MiB request size limit** returns `413`.
+- A body over the **request size limit** returns `413`.
+- Going over the **requests-per-minute or concurrency limit** returns `429`.
 - A token with **no balance** is rejected before any upstream call.
 - An **unknown token** returns `401`.
 - In marketplace-only mode, **no provider at your price** returns a dedicated

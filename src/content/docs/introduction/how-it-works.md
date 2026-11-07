@@ -11,7 +11,9 @@ the bill asynchronously.
 
 1. **Auth.** Your token is resolved (Redis cache, with a Postgres fallback).
 2. **Balance check.** The token must have a positive balance.
-3. **Rate limit.** Per-token requests-per-minute and a concurrency cap apply.
+3. **Limits.** Per-token requests-per-minute and a concurrency cap apply. Request
+   bodies are limited to 15 MiB, which is checked on arrival, before auth. See
+   [Limits](/api/proxy/#limits).
 4. **Marketplace match.** Active providers for the requested model are loaded,
    their prices capped at the cheapest centralized price, filtered by your price
    ceiling and provider health, then sorted by price.
