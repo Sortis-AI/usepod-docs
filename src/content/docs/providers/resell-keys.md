@@ -48,16 +48,16 @@ fallback instead. Price at or below centralized on both axes to be eligible.
 At `usepod.ai/host` you choose one of two pricing methods:
 
 - **Automatic markdown.** You set one percentage, and every model your key
-  serves lists at that much below what **your upstream charges you** for it, on
-  input, output, and cache tokens. A 20% markdown on a Venice key lists each
-  model at 80% of Venice's price. If your upstream sells a model below the
-  cheapest centralized price (Surplus often does), the markdown comes off the
-  centralized price instead, so a markdown never takes you further below your
-  own cost than the percentage you set. New models list automatically. If your
-  upstream publishes prices but we don't have one for a model, that model isn't
-  listed. A model marked down from your upstream's price can still sit above
-  the cheapest centralized price; rule 1 then keeps it from winning traffic,
-  and the dashboard flags it as above market.
+  serves lists at that much below **your cost**: what your upstream charges
+  you for it, on input, output, and cache tokens. The discount is always taken
+  off your cost, never off another provider's price. A 20% markdown on a Venice
+  key lists each model at 80% of Venice's price. New models list
+  automatically. If your upstream publishes prices but we don't have one for a
+  model, that model isn't listed. A listing can still sit above the cheapest
+  centralized price; rule 1 then keeps it from winning traffic, and the
+  dashboard flags it as above market. (For upstreams whose prices we don't
+  track, such as Level5 or Groq, we can't know your cost, so the markdown comes
+  off the cheapest centralized price.)
 - **Price each model.** Each price is pre-filled at a 20% markdown off the
   cheapest centralized price, or off your upstream's list price when there is
   no centralized price. Adjust each one. A larger markdown wins more traffic
