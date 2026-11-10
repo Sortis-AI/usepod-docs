@@ -5,8 +5,8 @@ description: How provider earnings accrue and how to withdraw USDC to a Solana w
 
 ## How you earn
 
-Every settled marketplace inference credits your provider balance with **80% of
-the billed amount**; the remaining 20% goes to the treasury. Earnings accrue per
+Every settled marketplace inference credits your provider balance with **90% of
+the billed amount**; the remaining 10% goes to the treasury. Earnings accrue per
 request as the accounting worker settles usage — debiting the user and crediting
 you in the same transaction.
 

@@ -37,7 +37,7 @@ already pay for — and set your resale prices.
    The agent opens an outbound WebSocket to the coordinator, advertises your
    models and prices, and starts receiving jobs.
 
-You earn **80% of every settled inference**. Withdraw to a Solana wallet on
+You earn **90% of every settled inference**. Withdraw to a Solana wallet on
 demand — see [Earnings & cashout](/providers/earnings-and-cashout/).
 
 ## Walk through it in the dashboard

@@ -34,12 +34,12 @@ the bill asynchronously.
 - **Demand side.** You hold a token with a USDC balance and send standard API
   requests. See [Using UsePod](/using/quickstart/).
 - **Supply side.** Operators run the provider agent (or enroll a key relay),
-  advertise models and prices, and earn 80% of every settled inference. See
+  advertise models and prices, and earn 90% of every settled inference. See
   [Running a provider](/providers/quickstart/).
 
 ## Settlement and fees
 
-Marketplace routes split each settled inference **80% to the provider, 20% to the
+Marketplace routes split each settled inference **90% to the provider, 10% to the
 treasury**. Users are billed at the operator's listed price, which is capped at
 the cheapest centralized price for that model — so the marketplace never costs
 more than the fallback.

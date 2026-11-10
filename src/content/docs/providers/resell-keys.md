@@ -43,13 +43,25 @@ and filters out any listing above it. List above centralized on input *or*
 output and you simply won't be selected, the request goes to the centralized
 fallback instead. Price at or below centralized on both axes to be eligible.
 
-### 2. The dashboard suggests a markdown off that ceiling
+### 2. Automatic markdown, or price each model
 
-When you build your catalog at `usepod.ai/host`, each model's price is
-pre-filled at a **20% markdown** off its base price, where the base is the
-cheapest centralized price for that model if one exists, otherwise the
-upstream's own list price. Adjust per model or apply a bulk markdown. A larger
-markdown wins more traffic (you're cheaper) but thins your margin.
+At `usepod.ai/host` you choose one of two pricing methods:
+
+- **Automatic markdown.** You set one percentage, and every model your key
+  serves lists at that much below what **your upstream charges you** for it, on
+  input, output, and cache tokens. A 20% markdown on a Venice key lists each
+  model at 80% of Venice's price. If your upstream sells a model below the
+  cheapest centralized price (Surplus often does), the markdown comes off the
+  centralized price instead, so a markdown never takes you further below your
+  own cost than the percentage you set. New models list automatically. If your
+  upstream publishes prices but we don't have one for a model, that model isn't
+  listed. A model marked down from your upstream's price can still sit above
+  the cheapest centralized price; rule 1 then keeps it from winning traffic,
+  and the dashboard flags it as above market.
+- **Price each model.** Each price is pre-filled at a 20% markdown off the
+  cheapest centralized price, or off your upstream's list price when there is
+  no centralized price. Adjust each one. A larger markdown wins more traffic
+  but thins your margin.
 
 ### 3. Your upstream bill is still yours
 
@@ -57,12 +69,15 @@ UsePod bills the *user* at your listed price and credits you the provider share.
 It does **not** pay your upstream. Your margin is:
 
 ```
-your 80% share  −  what your upstream charges you for those tokens
+your 90% share  −  what your upstream charges you for those tokens
 ```
 
 So price above your real upstream cost, not just below centralized. If your
-upstream cost for a model is higher than 80% of the centralized price, that
-model can't be profitable to relay, leave it out of your catalog.
+upstream cost for a model is higher than 90% of the centralized price, that
+model can't be profitable to relay, leave it out of your catalog. Cached
+tokens count on both sides: your upstream charges for them, and you are
+credited for them at your listing's cache rates (see
+[Pricing](/marketplace/pricing/#billing-basis)).
 
 ### 4. Optional: a daily spend cap
 
@@ -127,25 +142,23 @@ then split:
 
 | Party | Share |
 | --- | --- |
-| You (provider) | 80% |
-| Treasury | 20% |
+| You (provider) | 90% |
+| Treasury | 10% |
 
 Worked example, a listing at $0.40/M input and $0.60/M output serving a request
 of 50,000 input + 20,000 output tokens:
 
 ```
 gross    = 50,000 × $0.40/M + 20,000 × $0.60/M = $0.032
-you (80%)                                       = $0.0256
-treasury (20%)                                  = $0.0064
-your net = $0.0256 − (your upstream cost for those tokens)
+you (90%)                                       = $0.0288
+treasury (10%)                                  = $0.0032
+your net = $0.0288 − (your upstream cost for those tokens)
 ```
 
-:::caution[Cache tokens are not billed on relays today]
-Marketplace and key relay quotes currently carry only input and output rates, so
-cache-read and cache-write tokens are billed at **0** on relay routes. Don't
-price assuming cache-token revenue, and remember your upstream may still charge
-you for them.
-:::
+Cache-read and cache-write tokens are part of `gross`, at your listing's cache
+rates. Automatic markdown sets those from your upstream's own cache prices.
+Listings without cache rates bill cached tokens as described in
+[Pricing](/marketplace/pricing/#billing-basis).
 
 Earnings accrue to your provider balance as requests settle. Withdraw on demand,
 see [Earnings & cashout](/providers/earnings-and-cashout/).
