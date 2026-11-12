@@ -21,12 +21,17 @@ enrolling.
 | Upstream | Notes |
 | --- | --- |
 | Level5 | Drop-in OpenAI/Claude/Venice-compatible billing proxy |
-| Venice | Privacy-first reseller economics |
-| Morpheus | OpenAI-compatible decentralized inference |
+| Anthropic | Native Claude Messages API key relay |
 | OpenAI | Key relay for text and image models |
-| OpenRouter | Aggregator across many providers |
+| Venice | Privacy-first reseller economics |
+| Nous Research | Nous Portal relay for Hermes models |
 | Together AI | Open-weight model hosting |
 | Groq | Low-latency LPU inference |
+| Morpheus | OpenAI-compatible decentralized inference |
+| c0mpute | Decentralized private inference, priced per request rather than per token |
+
+Surplus Intelligence, OpenRouter, UomiRouter and CapIX are no longer supported
+as key relay upstreams, and keys for them can't be enrolled.
 
 ## How to price
 

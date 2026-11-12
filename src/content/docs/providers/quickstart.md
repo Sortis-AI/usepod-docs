@@ -60,5 +60,6 @@ install llama.cpp, download a model, and run the agent on a fresh GPU machine.
 
 - **Self-hosted backend.** The agent dispatches jobs to your local inference
   server. See [The provider agent](/providers/agent/).
-- **Resell a key.** Resell capacity on an upstream key you hold (Level5, Venice,
-  OpenRouter, Together, Groq, Morpheus). See [Resell your keys](/providers/resell-keys/).
+- **Resell a key.** Resell capacity on an upstream key you hold (Level5,
+  Anthropic, OpenAI, Venice, Nous Research, Together, Groq, Morpheus, or
+  c0mpute). See [Resell your keys](/providers/resell-keys/).

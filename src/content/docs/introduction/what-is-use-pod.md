@@ -5,7 +5,7 @@ description: An inference marketplace with a drop-in OpenAI/Anthropic-compatible
 
 UsePod is an **inference marketplace**. Independent operators run open-weight
 models on their own GPU hardware — or relay requests with their own keys to
-upstreams like Level5, Venice, OpenRouter, Together, Groq, or Morpheus — set
+upstreams like Level5, Venice, Nous Research, Together, Groq, or Morpheus — set
 their prices, and earn USDC. Users send standard OpenAI- or Anthropic-compatible
 API requests and get matched with the best-priced provider that meets their
 requirements.
